@@ -25,11 +25,14 @@
         >
       </ElBreadcrumb>
     </div>
-    <ElAvatar style="margin-left: auto">{{
-      user?.role === "ADMIN"
-        ? `${user.admin?.name[0].toUpperCase()}${user.admin?.name[1].toUpperCase()}`
-        : `${user?.organizer?.name[0].toUpperCase()}${user?.organizer?.name[1].toUpperCase()}`
-    }}</ElAvatar>
+    <ElAvatar
+      :src="
+        user?.role === 'ORGANIZER'
+          ? `/uploads/${user?.organizer?.avatar}`
+          : '/uploads/default.png'
+      "
+      style="margin-left: auto; object-fit: cover"
+    />
   </header>
 </template>
 
