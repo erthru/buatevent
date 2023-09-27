@@ -85,9 +85,9 @@
             background-color: #e6e6e6;
           "
         >
-          <el-icon style="font-size: 32px; margin: 0 auto">
+          <ElIcon style="font-size: 32px; margin: 0 auto">
             <Plus />
-          </el-icon>
+          </ElIcon>
         </div>
       </ElUpload>
     </ElFormItem>
