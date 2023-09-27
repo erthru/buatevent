@@ -42,7 +42,8 @@
       }"
     >
       <ElInput
-        :model-value="user?.email"
+        v-model="form.email"
+        type="email"
         placeholder="Masukkan Eamil"
         disabled
       />
@@ -105,6 +106,7 @@ const { user, fetchUser } = useUser();
 type Form = {
   name: string;
   username: string;
+  email: string;
   avatar: string;
   phone: string;
 };
@@ -118,6 +120,7 @@ const state = reactive({
 const form = reactive<Form>({
   name: user.value?.organizer?.name!!,
   username: user.value?.organizer?.username!!,
+  email: user.value?.email!!,
   avatar: user.value?.organizer?.avatar!!,
   phone: user.value?.organizer?.phone!!,
 });
