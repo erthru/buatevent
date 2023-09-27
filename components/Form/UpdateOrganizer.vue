@@ -147,22 +147,16 @@ const submit = async (formInstance: FormInstance | undefined) => {
       state.isLoading = true;
 
       let avatarBase64 = "";
-      let avatarExtension = "";
 
       if (state.selectedAvatar) {
         avatarBase64 = await convertFileToBase64(state.selectedAvatar);
-
-        avatarExtension = state.selectedAvatar.name.substring(
-          state.selectedAvatar.name.lastIndexOf("."),
-          state.selectedAvatar.name.length
-        );
       }
 
       await $client.user.updateOrganizer.mutate({
         name: form.name,
         phone: form.phone,
         avatar: avatarBase64,
-        avatarExtension,
+        avatarName: state.selectedAvatar?.name || "",
       });
 
       await fetchUser();

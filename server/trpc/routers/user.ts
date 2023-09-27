@@ -102,13 +102,13 @@ export const userRouter = router({
       z.object({
         name: z.string(),
         avatar: z.string(),
-        avatarExtension: z.string(),
+        avatarName: z.string(),
         phone: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        const { name, avatar, avatarExtension, phone } = input;
+        const { name, avatar, avatarName, phone } = input;
         const { id } = ctx;
 
         const user = await prisma.user.findUnique({
@@ -132,7 +132,13 @@ export const userRouter = router({
 
         if (avatar) {
           const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-          const name = `avatar-${unique}${avatarExtension}`;
+
+          const ext = avatarName.substring(
+            avatarName.lastIndexOf("."),
+            avatarName.length
+          );
+
+          const name = `avatar-${unique}${ext}`;
 
           const fileBuffer = Buffer.from(
             avatar.replace(/^data:image\/\w+;base64,/, ""),
