@@ -1,0 +1,227 @@
+<template>
+  <div>
+    <aside
+      class="sidebar"
+      style="
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #e5e5e5;
+        transition: width 0.2s;
+      "
+      :style="{
+        width: menu.isSidebarOpen.value ? '275px' : '0px',
+        overflowX: menu.isSidebarOpen.value ? 'unset' : 'hidden',
+      }"
+    >
+      <p
+        style="
+          margin: 0 auto;
+          font-size: 28px;
+          font-weight: 600;
+          margin-top: 52px;
+        "
+      >
+        LOGO HERE
+      </p>
+      <ul
+        style="
+          margin-top: 56px;
+          display: flex;
+          flex-direction: column;
+          row-gap: 10px;
+        "
+      >
+        <li
+          v-for="(item, i) in sidebarItems"
+          :key="`si-${i}`"
+          style="padding: 0 16px 0 10px"
+          :style="{
+            borderLeft: `4px solid ${
+              item.isActive ? '#f0932b' : 'transparent'
+            }`,
+          }"
+        >
+          <NuxtLink :to="item.to" @click="item.onClick">
+            <div
+              style="
+                padding: 12px 18px;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                column-gap: 16px;
+              "
+              :style="{
+                backgroundColor: `${item.isActive ? '#f5ebe1' : 'transparent'}`,
+              }"
+            >
+              <ElIcon
+                style="font-size: 20px"
+                :style="{ color: `${item.isActive ? '#f0932b' : '#767676'}` }"
+              >
+                <component :is="item.icon" />
+              </ElIcon>
+              <p
+                style="font-size: 17px; font-weight: 500"
+                :style="{ color: `${item.isActive ? '#f0932b' : '#767676'}` }"
+              >
+                {{ item.title }}
+              </p>
+            </div>
+          </NuxtLink>
+        </li>
+      </ul>
+
+      <NuxtLink
+        to="/dashboard/events/add"
+        style="
+          margin: auto 32px 32px 32px;
+          padding: 14px 18px;
+          background-color: #edd7bc;
+          display: flex;
+          align-items: center;
+          color: black;
+        "
+      >
+        <p style="line-height: 21px; font-size: 15px; font-weight: 500">
+          Buat Event <br />Baru
+        </p>
+        <div
+          to="/dashboard/events/add"
+          style="
+            margin-left: auto;
+            background-color: #f0932b;
+            height: 36px;
+            width: 36px;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+          "
+        >
+          <ElIcon style="color: white; font-size: 16px; margin: auto">
+            <Plus />
+          </ElIcon>
+        </div>
+      </NuxtLink>
+    </aside>
+    <div
+      v-if="menu.isSidebarOpen.value"
+      class="sidebar-overlay"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+      "
+      @click="menu.closeSidebar()"
+    />
+  </div>
+</template>
+
+<script lang="ts" setup>
+import {
+  Calendar,
+  House,
+  Service,
+  Setting,
+  SwitchButton,
+  Plus,
+} from "@element-plus/icons-vue";
+
+const route = useRoute();
+const tokenCookie = useCookie("token");
+const breakpoint = useBreakpoint();
+const menu = useMenu();
+
+const sidebarItems = computed(() => {
+  return [
+    {
+      title: "Dashboard",
+      to: "/dashboard",
+      isActive: route.path === "/dashboard",
+      icon: House,
+      onClick: () => {
+        onItemClick();
+      },
+    },
+    {
+      title: "Event",
+      to: "/dashboard/events",
+      isActive: route.path.includes("/dashboard/events"),
+      icon: Calendar,
+      onClick: () => {
+        onItemClick();
+      },
+    },
+    {
+      title: "Pengaturan",
+      to: "/dashboard/setting",
+      isActive: route.path.includes("/dashboard/setting"),
+      icon: Setting,
+      onClick: () => {
+        onItemClick();
+      },
+    },
+    {
+      title: "Bantuan",
+      to: "/dashboard/help",
+      isActive: route.path.includes("/dashboard/help"),
+      icon: Service,
+      onClick: () => {
+        onItemClick();
+      },
+    },
+    {
+      title: "Logout",
+      to: "#logout",
+      isActive: false,
+      icon: SwitchButton,
+      onClick: () => {
+        onItemClick();
+        tokenCookie.value = "";
+        navigateTo("/");
+      },
+    },
+  ];
+});
+
+const onItemClick = () => {
+  if (["lg", "md", "sm"].includes(breakpoint.value)) {
+    menu.closeSidebar();
+  }
+};
+
+onMounted(() => {
+  if (breakpoint.value === "xl") {
+    menu.openSidebar();
+  }
+});
+</script>
+
+<style scoped>
+.sidebar {
+  background-color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.sidebar-overlay {
+  display: flex;
+}
+
+@media (min-width: 1200px) {
+  .sidebar {
+    background-color: transparent;
+    position: relative;
+  }
+
+  .sidebar-overlay {
+    display: none;
+  }
+}
+</style>
