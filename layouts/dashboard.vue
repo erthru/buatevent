@@ -22,12 +22,12 @@ onMounted(() => {
 
 <style scoped>
 main div {
-  padding: 0 16px;
+  padding: 0 16px 16px 16px;
 }
 
 @media (min-width: 768px) {
   main div {
-    padding: 0 24px;
+    padding: 0 24px 24px 24px;
   }
 }
 </style>
