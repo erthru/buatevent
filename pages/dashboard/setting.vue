@@ -2,8 +2,8 @@
   <div class="wrapper" style="display: flex; width: 100%; gap: 16px">
     <ElCard style="width: 100%; height: max-content">
       <p style="font-size: 18px; font-weight: 600">Perbarui Profil</p>
-      <FormUpdateCustomer
-        v-if="user?.role === 'CUSTOMER'"
+      <FormUpdateOrganizer
+        v-if="user?.role === 'ORGANIZER'"
         style="margin-top: 16px"
       />
     </ElCard>

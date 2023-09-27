@@ -4,7 +4,7 @@ export const useUser = () => {
   const { $client } = useNuxtApp();
 
   const user = useState<Prisma.UserGetPayload<{
-    include: { admin: true; customer: true };
+    include: { admin: true; organizer: true };
   }> | null>("user", () => null);
 
   const fetchUser = async () => {

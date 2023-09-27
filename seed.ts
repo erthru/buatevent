@@ -5,8 +5,11 @@ const prisma = new PrismaClient();
 
 const main = async () => {
   try {
+    await prisma.eventMember.deleteMany();
+    await prisma.eventTicket.deleteMany();
+    await prisma.event.deleteMany();
     await prisma.admin.deleteMany();
-    await prisma.customer.deleteMany();
+    await prisma.organizer.deleteMany();
     await prisma.user.deleteMany();
 
     const encryptedPassword = await bcrypt.hash("123456", 10);
@@ -19,25 +22,28 @@ const main = async () => {
       },
     });
 
-    const userCustomer = await prisma.user.create({
+    const userOrganizer = await prisma.user.create({
       data: {
-        email: "customer@buatevent.com",
+        email: "organizer@buatevent.com",
         password: encryptedPassword,
-        role: "CUSTOMER",
+        role: "ORGANIZER",
       },
     });
 
     await Promise.all([
       prisma.admin.create({
         data: {
-          name: "Admin",
+          name: "Buat Event Admin",
           userId: userAdmin.id,
         },
       }),
-      prisma.customer.create({
+      prisma.organizer.create({
         data: {
-          name: "Customer",
-          userId: userCustomer.id,
+          username: "organizer",
+          name: "Buat Event Organizer",
+          avatar: "default.png",
+          phone: "082293389523",
+          userId: userOrganizer.id,
         },
       }),
     ]);

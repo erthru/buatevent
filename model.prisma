@@ -9,18 +9,29 @@ datasource db {
 
 enum UserRole {
     ADMIN
-    CUSTOMER
+    ORGANIZER
+}
+
+enum EventType {
+    ONLINE
+    OFFLINE
+    BOTH
+}
+
+enum EventMemberStatus {
+    UNPAID
+    PAID
 }
 
 model User {
-    id        Int       @id @default(autoincrement())
-    email     String    @unique
+    id        Int        @id @default(autoincrement())
+    email     String     @unique
     password  String
     role      UserRole
-    createdAt DateTime  @default(now())
-    updatedAt DateTime? @updatedAt
+    createdAt DateTime   @default(now())
+    updatedAt DateTime?  @updatedAt
     admin     Admin?
-    customer  Customer?
+    organizer Organizer?
 }
 
 model Admin {
@@ -32,11 +43,60 @@ model Admin {
     user      User      @relation(fields: [userId], references: [id])
 }
 
-model Customer {
+model Organizer {
     id        Int       @id @default(autoincrement())
+    username  String    @unique
     name      String
+    avatar    String
+    phone     String
     createdAt DateTime  @default(now())
     updatedAt DateTime? @updatedAt
     userId    Int       @unique
     user      User      @relation(fields: [userId], references: [id])
+    events    Event[]
+}
+
+model Event {
+    id           Int           @id @default(autoincrement())
+    title        String
+    slug         String        @unique
+    thumbnail    String
+    body         String
+    startAt      DateTime
+    endAt        DateTime
+    type         EventType
+    isPublished  Boolean
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime?     @updatedAt
+    organizerId  Int
+    organizer    Organizer     @relation(fields: [organizerId], references: [id])
+    eventTickets EventTicket[]
+    eventMembers EventMember[]
+}
+
+model EventTicket {
+    id           Int           @id @default(autoincrement())
+    name         String
+    price        Int
+    quota        Int
+    description  String
+    createdAt    DateTime      @default(now())
+    updatedAt    DateTime?     @updatedAt
+    eventId      Int
+    event        Event         @relation(fields: [eventId], references: [id])
+    eventMembers EventMember[]
+}
+
+model EventMember {
+    id            Int               @id @default(autoincrement())
+    name          String
+    email         String
+    phone         String
+    status        EventMemberStatus
+    createdAt     DateTime          @default(now())
+    updatedAt     DateTime?         @updatedAt
+    eventId       Int
+    event         Event             @relation(fields: [eventId], references: [id])
+    eventTicketId Int
+    eventTicket   EventTicket       @relation(fields: [eventTicketId], references: [id])
 }

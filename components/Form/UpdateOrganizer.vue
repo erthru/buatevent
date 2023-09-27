@@ -35,7 +35,7 @@ const state = reactive({
 });
 
 const form = reactive<Form>({
-  name: user.value?.customer?.name!!,
+  name: user.value?.organizer?.name!!,
 });
 
 const submit = async (formInstance: FormInstance | undefined) => {
@@ -49,7 +49,7 @@ const submit = async (formInstance: FormInstance | undefined) => {
     try {
       state.isLoading = true;
 
-      await $client.user.updateCustomer.mutate({
+      await $client.user.updateOrganizer.mutate({
         name: form.name,
       });
 

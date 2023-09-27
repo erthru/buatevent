@@ -23,7 +23,7 @@ definePageMeta({
 <style scoped>
 .card {
   width: 100%;
-  margin: 24px auto 0px;
+  margin: 38px auto 0px;
 }
 
 @media (min-width: 768px) {

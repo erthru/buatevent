@@ -15,7 +15,7 @@ export const userRouter = router({
       const user = await prisma.user.findUnique({
         include: {
           admin: true,
-          customer: true,
+          organizer: true,
         },
         where: {
           id,
@@ -96,7 +96,7 @@ export const userRouter = router({
       }
     }),
 
-  updateCustomer: protectedProcedure
+  updateOrganizer: protectedProcedure
     .input(
       z.object({
         name: z.string(),
@@ -109,23 +109,23 @@ export const userRouter = router({
 
         const user = await prisma.user.findUnique({
           include: {
-            customer: true,
+            organizer: true,
           },
           where: {
             id,
           },
         });
 
-        const customer = await prisma.customer.update({
+        const organizer = await prisma.organizer.update({
           data: {
             name,
           },
           where: {
-            id: user?.customer?.id,
+            id: user?.organizer?.id,
           },
         });
 
-        return customer;
+        return organizer;
       } catch (err: any) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

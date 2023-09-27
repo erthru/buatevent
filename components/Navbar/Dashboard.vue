@@ -28,7 +28,7 @@
     <ElAvatar style="margin-left: auto">{{
       user?.role === "ADMIN"
         ? `${user.admin?.name[0].toUpperCase()}${user.admin?.name[1].toUpperCase()}`
-        : `${user?.customer?.name[0].toUpperCase()}${user?.customer?.name[1].toUpperCase()}`
+        : `${user?.organizer?.name[0].toUpperCase()}${user?.organizer?.name[1].toUpperCase()}`
     }}</ElAvatar>
   </header>
 </template>
