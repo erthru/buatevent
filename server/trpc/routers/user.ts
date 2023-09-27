@@ -4,6 +4,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { writeFile } from "fs/promises";
 
 const prisma = new PrismaClient();
 
@@ -100,11 +101,14 @@ export const userRouter = router({
     .input(
       z.object({
         name: z.string(),
+        avatar: z.string(),
+        avatarExtension: z.string(),
+        phone: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       try {
-        const { name } = input;
+        const { name, avatar, avatarExtension, phone } = input;
         const { id } = ctx;
 
         const user = await prisma.user.findUnique({
@@ -116,14 +120,36 @@ export const userRouter = router({
           },
         });
 
-        const organizer = await prisma.organizer.update({
+        let organizer = await prisma.organizer.update({
           data: {
             name,
+            phone,
           },
           where: {
             id: user?.organizer?.id,
           },
         });
+
+        if (avatar) {
+          const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+          const name = `avatar-${unique}${avatarExtension}`;
+
+          const fileBuffer = Buffer.from(
+            avatar.replace(/^data:image\/\w+;base64,/, ""),
+            "base64"
+          );
+
+          await writeFile(`./public/uploads/${name}`, fileBuffer);
+
+          organizer = await prisma.organizer.update({
+            data: {
+              avatar: name,
+            },
+            where: {
+              id: user?.organizer?.id,
+            },
+          });
+        }
 
         return organizer;
       } catch (err: any) {
