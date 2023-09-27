@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; display: flex; height: 100vh">
+  <div style="width: 100%; display: flex; min-height: 100vh; height: 100%">
     <SidebarDashboard />
     <main style="width: 100%">
       <NavbarDashboard />

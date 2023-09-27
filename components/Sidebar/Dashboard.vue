@@ -1,5 +1,12 @@
 <template>
-  <div>
+  <div
+    class="wrapper"
+    style="z-index: 2"
+    :style="{
+      width: menu.isSidebarOpen.value ? '350px' : '0px',
+      overflowX: menu.isSidebarOpen.value ? 'unset' : 'hidden',
+    }"
+  >
     <aside
       class="sidebar"
       style="
@@ -8,6 +15,7 @@
         flex-direction: column;
         border-right: 1px solid #e5e5e5;
         transition: width 0.2s;
+        overflow-y: auto;
       "
       :style="{
         width: menu.isSidebarOpen.value ? '275px' : '0px',
@@ -26,6 +34,7 @@
       </p>
       <ul
         style="
+          padding-bottom: 38px;
           margin-top: 56px;
           display: flex;
           flex-direction: column;
@@ -202,6 +211,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.wrapper {
+  position: fixed;
+}
+
 .sidebar {
   background-color: white;
   position: fixed;
@@ -215,9 +228,13 @@ onMounted(() => {
 }
 
 @media (min-width: 1200px) {
+  .wrapper {
+    position: relative;
+  }
+
   .sidebar {
     background-color: transparent;
-    position: relative;
+    position: fixed;
   }
 
   .sidebar-overlay {
