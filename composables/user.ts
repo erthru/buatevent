@@ -8,7 +8,6 @@ export const useUser = () => {
   }> | null>("user", () => null);
 
   const fetchUser = async () => {
-    console.log("fetch user...")
     const _user = await $client.user.profile.query();
     user.value = _user as any;
   };
