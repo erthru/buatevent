@@ -156,7 +156,6 @@ const submit = async (formInstance: FormInstance | undefined) => {
         name: form.name,
         phone: form.phone,
         avatar: avatarBase64,
-        avatarName: state.selectedAvatar?.name || "",
       });
 
       await fetchUser();
