@@ -6,6 +6,46 @@
     label-position="top"
   >
     <ElFormItem
+      label="Nama"
+      prop="name"
+      :rules="{
+        required: true,
+        trigger: 'blur',
+      }"
+    >
+      <ElInput v-model="form.name" placeholder="Masukkan nama" />
+    </ElFormItem>
+    <ElFormItem
+      label="No. HP"
+      prop="phone"
+      :rules="{
+        required: true,
+        trigger: 'blur',
+      }"
+    >
+      <ElInput v-model="form.phone" type="number" placeholder="8123456xxx">
+        <template #prepend> <span>+62</span> </template>
+      </ElInput>
+    </ElFormItem>
+    <ElFormItem
+      label="Username"
+      prop="username"
+      :rules="{
+        required: true,
+        trigger: 'blur',
+      }"
+    >
+      <ElInput v-model="form.username" placeholder="Masukkan username">
+        <template #append><span>.buatevent.com</span></template>
+      </ElInput>
+    </ElFormItem>
+    <p style="font-size: 12px; margin: -10px 0 16px 0">
+      Event yang dibuat nanti dapat diakses pada:
+      <span style="font-weight: 600"
+        >{{ form.username }}.buatevent.com/contoh-event</span
+      >
+    </p>
+    <ElFormItem
       label="Email"
       prop="email"
       :rules="{
@@ -29,6 +69,20 @@
         placeholder="Masukkan password"
       />
     </ElFormItem>
+    <ElFormItem
+      label="Konfirmasi Password"
+      prop="passwordConfirmation"
+      :rules="{
+        required: true,
+        trigger: 'blur',
+      }"
+    >
+      <ElInput
+        v-model="form.passwordConfirmation"
+        type="password"
+        placeholder="Masukkan konfirmasi password"
+      />
+    </ElFormItem>
     <ElButton type="primary" @click="submit(formRef)">Daftar</ElButton>
   </ElForm>
 </template>
@@ -38,10 +92,15 @@ import { FormInstance, ElNotification } from "element-plus";
 
 const formRef = ref<FormInstance>();
 const { $client } = useNuxtApp();
+const router = useRouter();
 
 type Form = {
+  name: string;
+  phone: string;
+  username: string;
   email: string;
   password: string;
+  passwordConfirmation: string;
 };
 
 const state = reactive({
@@ -49,8 +108,12 @@ const state = reactive({
 });
 
 const form = reactive<Form>({
+  name: "",
+  phone: "",
+  username: "",
   email: "",
   password: "",
+  passwordConfirmation: "",
 });
 
 const submit = async (formInstance: FormInstance | undefined) => {
@@ -62,18 +125,35 @@ const submit = async (formInstance: FormInstance | undefined) => {
 
   if (isValid) {
     try {
+      if (form.password !== form.passwordConfirmation) {
+        throw new Error("Password tidak sama");
+      }
+
       state.isLoading = true;
 
-      await $client.user.login.mutate({
+      await $client.user.register.mutate({
+        name: form.name,
+        phone: form.phone,
+        username: form.username,
         email: form.email,
         password: form.password,
       });
 
-      location.href = "/dashboard";
+      ElNotification({
+        title: "Sukses",
+        message: "Berhasil mendaftar, silahkan login",
+        type: "success",
+      });
+
+      router.push("/login");
     } catch (err: any) {
       ElNotification({
         title: "Error",
-        message: err.message,
+        message: err.message.includes("email")
+          ? "Email telah digunakan"
+          : err.message.includes("username")
+          ? "Username telah digunakan"
+          : err.message,
         type: "error",
       });
     } finally {

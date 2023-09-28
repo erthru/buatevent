@@ -23,8 +23,8 @@
         trigger: 'blur',
       }"
     >
-      <ElInput v-model="form.username" placeholder="Masukkan Username" disabled>
-        <template #append> .buatevent.com </template>
+      <ElInput v-model="form.username" placeholder="Masukkan username" disabled>
+        <template #append> <span>.buatevent.com</span> </template>
       </ElInput>
     </ElFormItem>
     <p style="font-size: 12px; margin: -10px 0 16px 0">
@@ -56,7 +56,9 @@
         trigger: 'blur',
       }"
     >
-      <ElInput v-model="form.phone" placeholder="Masukkan No. HP" />
+      <ElInput v-model="form.phone" type="number" placeholder="Masukkan No. HP">
+        <template #prepend> <span>+62</span> </template></ElInput
+      >
     </ElFormItem>
     <ElFormItem label="Avatar" prop="avatar">
       <ElUpload
@@ -91,7 +93,9 @@
         </div>
       </ElUpload>
     </ElFormItem>
-    <ElButton type="primary" style="margin-top: -16px" @click="submit(formRef)">Simpan</ElButton>
+    <ElButton type="primary" style="margin-top: -16px" @click="submit(formRef)"
+      >Simpan</ElButton
+    >
   </ElForm>
 </template>
 

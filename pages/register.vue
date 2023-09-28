@@ -5,6 +5,7 @@
       flex-direction: column;
       width: 100%;
       padding-top: 52px;
+      padding-bottom: 34px;
     "
   >
     <p style="margin: 0 auto; font-size: 28px; font-weight: 600">LOGO HERE</p>

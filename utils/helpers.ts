@@ -14,3 +14,16 @@ export const convertFileToBase64 = (file: File): Promise<string> => {
     reader.readAsDataURL(file);
   });
 };
+
+export const formatPhoneNumber = (input: string): string => {
+  let phoneNumber = input.trim();
+  phoneNumber = phoneNumber.replace(/\D/g, "");
+
+  if (phoneNumber.startsWith("62")) {
+    phoneNumber = phoneNumber.substring(2);
+  } else if (phoneNumber.startsWith("0")) {
+    phoneNumber = phoneNumber.substring(1);
+  }
+
+  return phoneNumber;
+};

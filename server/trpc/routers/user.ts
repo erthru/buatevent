@@ -5,10 +5,11 @@ import { TRPCError } from "@trpc/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { writeFile } from "fs/promises";
+import { formatPhoneNumber } from "~/utils/helpers";
 
 export const userRouter = router({
   profile: protectedProcedure.query(async ({ ctx }) => {
-    const { id, db, event } = ctx;
+    const { id, db } = ctx;
 
     try {
       const user = await db.user.findUnique({
@@ -47,23 +48,27 @@ export const userRouter = router({
 
         const encryptedPassword = await bcrypt.hash(password, 10);
 
-        const user = await db.user.create({
-          data: {
-            email,
-            password: encryptedPassword,
-            role: "ORGANIZER",
-            isActive: false,
-          },
-        });
+        const organizer = await db.$transaction(async (tx) => {
+          const user = await tx.user.create({
+            data: {
+              email,
+              password: encryptedPassword,
+              role: "ORGANIZER",
+              isActive: true,
+            },
+          });
 
-        const organizer = await db.organizer.create({
-          data: {
-            username,
-            name,
-            avatar: "default.png",
-            phone,
-            userId: user.id,
-          },
+          const _organizer = await tx.organizer.create({
+            data: {
+              username,
+              name,
+              avatar: "default.png",
+              phone: formatPhoneNumber(phone),
+              userId: user.id,
+            },
+          });
+
+          return _organizer;
         });
 
         return organizer;
@@ -165,7 +170,7 @@ export const userRouter = router({
         let organizer = await db.organizer.update({
           data: {
             name,
-            phone,
+            phone: formatPhoneNumber(phone),
           },
           where: {
             id: user?.organizer?.id,
