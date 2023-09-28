@@ -41,47 +41,51 @@
           row-gap: 10px;
         "
       >
-        <li
-          v-for="(item, i) in sidebarItems"
-          :key="`si-${i}`"
-          style="padding: 0 16px 0 10px"
-          :style="{
-            borderLeft: `4px solid ${
-              item.isActive ? '#f0932b' : 'transparent'
-            }`,
-          }"
-        >
-          <NuxtLink :to="item.to" @click="item.onClick">
-            <div
-              style="
-                padding: 12px 18px;
-                border-radius: 4px;
-                display: flex;
-                align-items: center;
-                column-gap: 16px;
-              "
-              :style="{
-                backgroundColor: `${item.isActive ? '#f5ebe1' : 'transparent'}`,
-              }"
-            >
-              <ElIcon
-                style="font-size: 20px"
-                :style="{ color: `${item.isActive ? '#f0932b' : '#767676'}` }"
+        <template v-for="(item, i) in sidebarItems">
+          <li
+            v-if="item.isShown"
+            :key="`si-${i}`"
+            style="padding: 0 16px 0 10px"
+            :style="{
+              borderLeft: `4px solid ${
+                item.isActive ? '#f0932b' : 'transparent'
+              }`,
+            }"
+          >
+            <NuxtLink :to="item.to" @click="item.onClick">
+              <div
+                style="
+                  padding: 12px 18px;
+                  border-radius: 4px;
+                  display: flex;
+                  align-items: center;
+                  column-gap: 16px;
+                "
+                :style="{
+                  backgroundColor: `${
+                    item.isActive ? '#f5ebe1' : 'transparent'
+                  }`,
+                }"
               >
-                <component :is="item.icon" />
-              </ElIcon>
-              <p
-                style="font-size: 17px; font-weight: 500"
-                :style="{ color: `${item.isActive ? '#f0932b' : '#767676'}` }"
-              >
-                {{ item.title }}
-              </p>
-            </div>
-          </NuxtLink>
-        </li>
+                <ElIcon
+                  style="font-size: 20px"
+                  :style="{ color: `${item.isActive ? '#f0932b' : '#767676'}` }"
+                >
+                  <component :is="item.icon" />
+                </ElIcon>
+                <p
+                  style="font-size: 17px; font-weight: 500"
+                  :style="{ color: `${item.isActive ? '#f0932b' : '#767676'}` }"
+                >
+                  {{ item.title }}
+                </p>
+              </div>
+            </NuxtLink>
+          </li>
+        </template>
       </ul>
-
       <NuxtLink
+        v-if="user?.role === 'ORGANIZER'"
         to="/dashboard/events/add"
         style="
           margin: auto 32px 32px 32px;
@@ -93,7 +97,7 @@
         "
       >
         <p style="line-height: 21px; font-size: 15px; font-weight: 500">
-          Buat Event <br />Baru
+          Buat Event<br />Baru
         </p>
         <div
           to="/dashboard/events/add"
@@ -144,6 +148,7 @@ const route = useRoute();
 const tokenCookie = useCookie("token");
 const breakpoint = useBreakpoint();
 const menu = useMenu();
+const { user } = useUser();
 
 const sidebarItems = computed(() => {
   return [
@@ -152,6 +157,7 @@ const sidebarItems = computed(() => {
       to: "/dashboard",
       isActive: route.path === "/dashboard",
       icon: House,
+      isShown: true,
       onClick: () => {
         onItemClick();
       },
@@ -161,6 +167,7 @@ const sidebarItems = computed(() => {
       to: "/dashboard/events",
       isActive: route.path.includes("/dashboard/events"),
       icon: Calendar,
+      isShown: user.value?.role === "ORGANIZER",
       onClick: () => {
         onItemClick();
       },
@@ -170,6 +177,7 @@ const sidebarItems = computed(() => {
       to: "/dashboard/setting",
       isActive: route.path.includes("/dashboard/setting"),
       icon: Setting,
+      isShown: true,
       onClick: () => {
         onItemClick();
       },
@@ -179,6 +187,7 @@ const sidebarItems = computed(() => {
       to: "/dashboard/help",
       isActive: route.path.includes("/dashboard/help"),
       icon: Service,
+      isShown: true,
       onClick: () => {
         onItemClick();
       },
@@ -188,6 +197,7 @@ const sidebarItems = computed(() => {
       to: "#logout",
       isActive: false,
       icon: SwitchButton,
+      isShown: true,
       onClick: () => {
         onItemClick();
         tokenCookie.value = "";

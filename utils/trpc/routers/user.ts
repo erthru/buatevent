@@ -207,6 +207,44 @@ export const userRouter = router({
       }
     }),
 
+  updateAdmin: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const { name } = input;
+        const { id, db } = ctx;
+
+        const user = await db.user.findUnique({
+          include: {
+            admin: true,
+          },
+          where: {
+            id,
+          },
+        });
+
+        let admin = await db.admin.update({
+          data: {
+            name,
+          },
+          where: {
+            id: user?.admin?.id,
+          },
+        });
+
+        return admin;
+      } catch (err: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
+
   updatePassword: protectedProcedure
     .input(
       z.object({

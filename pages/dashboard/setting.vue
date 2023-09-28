@@ -6,6 +6,7 @@
         v-if="user?.role === 'ORGANIZER'"
         style="margin-top: 16px"
       />
+      <FormUpdateAdmin v-if="user?.role === 'ADMIN'" style="margin-top: 16px" />
     </ElCard>
     <ElCard style="width: 100%; height: max-content">
       <p style="font-size: 18px; font-weight: 600">Ganti Password</p>
