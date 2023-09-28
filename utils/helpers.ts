@@ -37,3 +37,16 @@ export const paginateArray = <T>(
   const endIndex = startIndex + pageSize;
   return array.slice(startIndex, endIndex);
 };
+
+export const generateSlug = (str: string): string => {
+  const trimmedStr = str.trim();
+
+  const slug = trimmedStr
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+
+  const time = new Date().getTime();
+
+  return `${slug}-${time}`;
+};

@@ -17,7 +17,7 @@ definePageMeta({
   layout: "dashboard",
 });
 
-useAsyncData("dashboardHelp", async () => {
+useLazyAsyncData("dashboardHelp", async () => {
   menu.setTitle("Bantuan");
 
   menu.setBreadcrumbs([

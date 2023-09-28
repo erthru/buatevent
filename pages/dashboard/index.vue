@@ -17,7 +17,7 @@ definePageMeta({
   layout: "dashboard",
 });
 
-useAsyncData("dashboard", async () => {
+useLazyAsyncData("dashboard", async () => {
   menu.setTitle("Dashboard");
 
   menu.setBreadcrumbs([

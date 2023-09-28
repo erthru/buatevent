@@ -31,20 +31,24 @@
       <ElTableColumn prop="title" label="Judul" />
       <ElTableColumn prop="startAt" label="Mulai Pada">
         <template #default="{ row }">
-          {{
-            `${new Date(row.startAt).toLocaleDateString()} ${new Date(
-              row.startAt
-            ).toLocaleTimeString()}`
-          }}
+          <p>
+            {{
+              `${new Date(row.startAt).toLocaleDateString("id")} ${new Date(
+                row.startAt
+              ).toLocaleTimeString("id")}`
+            }}
+          </p>
         </template>
       </ElTableColumn>
       <ElTableColumn prop="endAt" label="Berakhir Pada">
         <template #default="{ row }">
-          {{
-            `${new Date(row.endAt).toLocaleDateString()} ${new Date(
-              row.endAt
-            ).toLocaleTimeString()}`
-          }}
+          <p>
+            {{
+              `${new Date(row.endAt).toLocaleDateString("id")} ${new Date(
+                row.endAt
+              ).toLocaleTimeString("id")}`
+            }}
+          </p>
         </template>
       </ElTableColumn>
       <ElTableColumn prop="type" label="Tipe" width="150">
@@ -65,13 +69,19 @@
           <p>{{ row.isPublished ? "Dipublikasi" : "Draft" }}</p>
         </template>
       </ElTableColumn>
-      <ElTableColumn label="Aksi" width="150">
+      <ElTableColumn label="Aksi" width="215">
         <template #default="{ row }">
-          <div class="action">
+          <div style="display: flex; gap: 12px">
+            <a
+              :href="`${protocol}//${user?.organizer?.username}.${host}/${row.slug}`"
+              target="_blank"
+            >
+              <ElButton type="success">Lihat Halaman</ElButton>
+            </a>
             <ElButton
-              type="danger"
+              type="warning"
               @click="router.push(`/dashboard/events/${row.id}`)"
-              >Lihat</ElButton
+              >Edit</ElButton
             >
           </div>
         </template>
@@ -95,6 +105,7 @@ const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
 const { $client } = useNuxtApp();
 const router = useRouter();
+const { user, fetchUser } = useUser();
 
 useHead({
   title: `Event | ${prc.appTitle}`,
@@ -111,9 +122,18 @@ const state = reactive({
   pageSize: 15,
 });
 
-const { data, pending: isLoading } = useAsyncData(
+const { data, pending: isLoading } = useLazyAsyncData(
   "dashboardEvents",
   async () => {
+    if (!user.value) {
+      await fetchUser();
+    }
+
+    if (user.value?.role !== "ORGANIZER") {
+      router.push("/dashboard");
+      return;
+    }
+
     menu.setTitle("Event");
 
     menu.setBreadcrumbs([
@@ -144,6 +164,14 @@ const events = computed(() => {
     data: filteredEvents.slice(startIndex, endIndex),
     total: filteredEvents.length,
   };
+});
+
+const host = computed(() => {
+  return typeof window !== "undefined" ? location.host : "";
+});
+
+const protocol = computed(() => {
+  return typeof window !== "undefined" ? location.protocol : "";
 });
 </script>
 

@@ -36,13 +36,15 @@
       }"
     >
       <ElInput v-model="form.username" placeholder="Masukkan username">
-        <template #append><span>.buatevent.com</span></template>
+        <template #append
+          ><span>.{{ host }}</span></template
+        >
       </ElInput>
     </ElFormItem>
     <p style="font-size: 12px; margin: -10px 0 16px 0">
       Event yang dibuat nanti dapat diakses pada:
       <span style="font-weight: 600"
-        >{{ form.username }}.buatevent.com/contoh-event</span
+        >{{ form.username }}.{{ host }}/contoh-event</span
       >
     </p>
     <ElFormItem
@@ -114,6 +116,10 @@ const form = reactive<Form>({
   email: "",
   password: "",
   passwordConfirmation: "",
+});
+
+const host = computed(() => {
+  return typeof window !== "undefined" ? location.host : "";
 });
 
 const submit = async (formInstance: FormInstance | undefined) => {

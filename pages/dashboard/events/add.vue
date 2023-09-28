@@ -1,12 +1,14 @@
 <template>
   <ElCard>
-    <p>dashboard event add</p>
+    <FormAddEvent />
   </ElCard>
 </template>
 
 <script setup lang="ts">
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
+const { user, fetchUser } = useUser();
+const router = useRouter();
 
 useHead({
   title: `Tambah Event | ${prc.appTitle}`,
@@ -17,7 +19,16 @@ definePageMeta({
   layout: "dashboard",
 });
 
-useAsyncData("dashboardEventsAdd", async () => {
+useLazyAsyncData("dashboardEventsAdd", async () => {
+  if (!user.value) {
+    await fetchUser();
+  }
+
+  if (user.value?.role !== "ORGANIZER") {
+    router.push("/dashboard");
+    return;
+  }
+
   menu.setTitle("Tambah Event");
 
   menu.setBreadcrumbs([

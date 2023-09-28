@@ -24,13 +24,15 @@
       }"
     >
       <ElInput v-model="form.username" placeholder="Masukkan username" disabled>
-        <template #append> <span>.buatevent.com</span> </template>
+        <template #append>
+          <span>.{{ host }}</span>
+        </template>
       </ElInput>
     </ElFormItem>
     <p style="font-size: 12px; margin: -10px 0 16px 0">
       Event yang dibuat nanti dapat diakses pada:
       <span style="font-weight: 600"
-        >{{ form.username }}.buatevent.com/contoh-event</span
+        >{{ form.username }}.{{ host }}/contoh-event</span
       >
     </p>
     <ElFormItem
@@ -60,14 +62,7 @@
         <template #prepend> <span>+62</span> </template></ElInput
       >
     </ElFormItem>
-    <ElFormItem
-      label="Avatar"
-      prop="avatar"
-      :rules="{
-        required: true,
-        trigger: 'blur',
-      }"
-    >
+    <ElFormItem label="Avatar" prop="avatar">
       <ElUpload
         :key="state.uploadAvatarKey"
         :auto-upload="false"
@@ -76,7 +71,6 @@
         :on-change="onSelectAvatar"
       >
         <img
-          v-if="form.avatar || state.selectedAvatar"
           :src="
             state.selectedAvatar
               ? getPreviewSelectedAvatar(state.selectedAvatar)
@@ -84,20 +78,6 @@
           "
           style="width: 175px; height: 175px; object-fit: cover"
         />
-        <div
-          v-else
-          style="
-            width: 175px;
-            height: 175px;
-            display: flex;
-            align-items: center;
-            background-color: #e6e6e6;
-          "
-        >
-          <ElIcon style="font-size: 32px; margin: 0 auto">
-            <Plus />
-          </ElIcon>
-        </div>
       </ElUpload>
     </ElFormItem>
     <ElButton type="primary" style="margin-top: -16px" @click="submit(formRef)"
@@ -146,6 +126,10 @@ const getPreviewSelectedAvatar = (selectedAvatar: File) => {
   return URL.createObjectURL(selectedAvatar);
 };
 
+const host = computed(() => {
+  return typeof window !== "undefined" ? location.host : "";
+});
+
 const submit = async (formInstance: FormInstance | undefined) => {
   if (!formInstance) {
     return;
@@ -156,7 +140,6 @@ const submit = async (formInstance: FormInstance | undefined) => {
   if (isValid) {
     try {
       state.isLoading = true;
-
       let avatarBase64 = "";
 
       if (state.selectedAvatar) {
