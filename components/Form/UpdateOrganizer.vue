@@ -91,7 +91,7 @@
         </div>
       </ElUpload>
     </ElFormItem>
-    <ElButton type="primary" @click="submit(formRef)">Simpan</ElButton>
+    <ElButton type="primary" style="margin-top: -16px" @click="submit(formRef)">Simpan</ElButton>
   </ElForm>
 </template>
 
