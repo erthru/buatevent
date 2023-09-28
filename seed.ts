@@ -44,7 +44,7 @@ const main = async () => {
           username: "organizer",
           name: "Buat Event Organizer",
           avatar: "default.png",
-          phone: "082293389523",
+          phone: "82293389523",
           userId: userOrganizer.id,
         },
       }),

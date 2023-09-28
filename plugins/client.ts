@@ -1,6 +1,6 @@
 import { observable } from "@trpc/server/observable";
 import { createTRPCNuxtClient, httpBatchLink } from "trpc-nuxt/client";
-import type { AppRouter } from "~/server/trpc/routers";
+import type { AppRouter } from "~/utils/trpc/routers";
 
 export default defineNuxtPlugin(() => {
   /**
