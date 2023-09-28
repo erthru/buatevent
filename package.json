@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "db:migrate": "npx prisma migrate dev --skip-seed",
     "db:push": "npx prisma db push",
-    "db:seed": "npx prisma db seed"
+    "db:seed": "npx prisma db seed",
+    "db:studio": "npx prisma studio"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",

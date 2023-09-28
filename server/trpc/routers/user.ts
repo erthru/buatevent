@@ -6,14 +6,12 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { writeFile } from "fs/promises";
 
-const prisma = new PrismaClient();
-
 export const userRouter = router({
   profile: protectedProcedure.query(async ({ ctx }) => {
-    const { id } = ctx;
+    const { id, db, event } = ctx;
 
     try {
-      const user = await prisma.user.findUnique({
+      const user = await db.user.findUnique({
         include: {
           admin: true,
           organizer: true,
@@ -22,6 +20,15 @@ export const userRouter = router({
           id,
         },
       });
+
+      if (!user) {
+        deleteCookie(event, "token");
+
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "user not found",
+        });
+      }
 
       return user;
     } catch (err: any) {
@@ -43,9 +50,9 @@ export const userRouter = router({
       try {
         const { email, password } = input;
         const { tokenSecret } = useRuntimeConfig();
-        const { event } = ctx;
+        const { event, db } = ctx;
 
-        const user = await prisma.user.findUnique({
+        const user = await db.user.findUnique({
           where: {
             email,
           },
@@ -108,9 +115,9 @@ export const userRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         const { name, avatar, phone } = input;
-        const { id } = ctx;
+        const { id, db } = ctx;
 
-        const user = await prisma.user.findUnique({
+        const user = await db.user.findUnique({
           include: {
             organizer: true,
           },
@@ -119,7 +126,7 @@ export const userRouter = router({
           },
         });
 
-        let organizer = await prisma.organizer.update({
+        let organizer = await db.organizer.update({
           data: {
             name,
             phone,
@@ -141,7 +148,7 @@ export const userRouter = router({
 
           await writeFile(`./public/uploads/${name}`, fileBuffer);
 
-          organizer = await prisma.organizer.update({
+          organizer = await db.organizer.update({
             data: {
               avatar: name,
             },
@@ -169,11 +176,11 @@ export const userRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         const { password } = input;
-        const { id } = ctx;
+        const { id, db } = ctx;
 
         const encryptedPassword = await bcrypt.hash(password, 10);
 
-        const user = await prisma.user.update({
+        const user = await db.user.update({
           data: {
             password: encryptedPassword,
           },

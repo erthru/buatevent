@@ -1,43 +1,43 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-
-const prisma = new PrismaClient();
+import db from "./utils/db.js";
 
 const main = async () => {
   try {
-    await prisma.eventMember.deleteMany();
-    await prisma.eventTicket.deleteMany();
-    await prisma.event.deleteMany();
-    await prisma.admin.deleteMany();
-    await prisma.organizer.deleteMany();
-    await prisma.user.deleteMany();
+    await db.eventMember.deleteMany();
+    await db.eventTicket.deleteMany();
+    await db.event.deleteMany();
+    await db.admin.deleteMany();
+    await db.organizer.deleteMany();
+    await db.user.deleteMany();
 
     const encryptedPassword = await bcrypt.hash("123456", 10);
 
-    const userAdmin = await prisma.user.create({
+    const userAdmin = await db.user.create({
       data: {
         email: "admin@buatevent.com",
         password: encryptedPassword,
         role: "ADMIN",
+        isActive: true,
       },
     });
 
-    const userOrganizer = await prisma.user.create({
+    const userOrganizer = await db.user.create({
       data: {
         email: "organizer@buatevent.com",
         password: encryptedPassword,
         role: "ORGANIZER",
+        isActive: true,
       },
     });
 
     await Promise.all([
-      prisma.admin.create({
+      db.admin.create({
         data: {
           name: "Buat Event Admin",
           userId: userAdmin.id,
         },
       }),
-      prisma.organizer.create({
+      db.organizer.create({
         data: {
           username: "organizer",
           name: "Buat Event Organizer",
