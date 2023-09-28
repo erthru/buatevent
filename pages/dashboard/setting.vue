@@ -28,7 +28,7 @@ definePageMeta({
   layout: "dashboard",
 });
 
-useAsyncData("setting", async () => {
+useAsyncData("dashboardSetting", async () => {
   menu.setTitle("Pengaturan");
 
   menu.setBreadcrumbs([
