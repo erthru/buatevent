@@ -60,7 +60,14 @@
         <template #prepend> <span>+62</span> </template></ElInput
       >
     </ElFormItem>
-    <ElFormItem label="Avatar" prop="avatar">
+    <ElFormItem
+      label="Avatar"
+      prop="avatar"
+      :rules="{
+        required: true,
+        trigger: 'blur',
+      }"
+    >
       <ElUpload
         :key="state.uploadAvatarKey"
         :auto-upload="false"
