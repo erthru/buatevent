@@ -30,6 +30,51 @@ export const userRouter = router({
     }
   }),
 
+  register: publicProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        phone: z.string(),
+        username: z.string(),
+        email: z.string(),
+        password: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const { name, phone, username, email, password } = input;
+        const { db } = ctx;
+
+        const encryptedPassword = await bcrypt.hash(password, 10);
+
+        const user = await db.user.create({
+          data: {
+            email,
+            password: encryptedPassword,
+            role: "ORGANIZER",
+            isActive: false,
+          },
+        });
+
+        const organizer = await db.organizer.create({
+          data: {
+            username,
+            name,
+            avatar: "default.png",
+            phone,
+            userId: user.id,
+          },
+        });
+
+        return organizer;
+      } catch (err: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
+
   login: publicProcedure
     .input(
       z.object({

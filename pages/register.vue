@@ -9,12 +9,12 @@
   >
     <p style="margin: 0 auto; font-size: 28px; font-weight: 600">LOGO HERE</p>
     <ElCard class="card">
-      <p style="font-size: 28px; font-weight: 600">Login</p>
-      <FormLogin style="margin-top: 16px" />
+      <p style="font-size: 28px; font-weight: 600">Daftar</p>
+      <FormRegister style="margin-top: 16px" />
     </ElCard>
     <p style="margin: 8px auto; font-size: 14px">
-      Belum punya akun?
-      <NuxtLink to="/register" style="font-weight: 500">Daftar</NuxtLink>
+      Sudah punya akun?
+      <NuxtLink to="/login" style="font-weight: 500">Login</NuxtLink>
     </p>
   </div>
 </template>
@@ -23,7 +23,7 @@
 const { public: prc } = useRuntimeConfig();
 
 useHead({
-  title: `Login | ${prc.appTitle}`,
+  title: `Daftar | ${prc.appTitle}`,
 });
 
 definePageMeta({

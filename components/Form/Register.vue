@@ -4,7 +4,6 @@
     ref="formRef"
     :model="form"
     label-position="top"
-    style="display: flex; flex-direction: column; width: 100%"
   >
     <ElFormItem
       label="Email"
@@ -30,14 +29,7 @@
         placeholder="Masukkan password"
       />
     </ElFormItem>
-    <NuxtLink
-      to="/forgot-password"
-      style="margin: -14px 0 10px auto; font-size: 14px; font-weight: 500;"
-      >Lupa Password?</NuxtLink
-    >
-    <ElButton type="primary" @click="submit(formRef)" style="width: max-content"
-      >Login</ElButton
-    >
+    <ElButton type="primary" @click="submit(formRef)">Daftar</ElButton>
   </ElForm>
 </template>
 
