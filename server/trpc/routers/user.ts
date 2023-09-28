@@ -21,15 +21,6 @@ export const userRouter = router({
         },
       });
 
-      if (!user) {
-        deleteCookie(event, "token");
-
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "user not found",
-        });
-      }
-
       return user;
     } catch (err: any) {
       throw new TRPCError({

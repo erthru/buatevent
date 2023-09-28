@@ -1,5 +1,7 @@
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-import db from "./utils/db.js";
+
+const db = new PrismaClient();
 
 const main = async () => {
   try {
