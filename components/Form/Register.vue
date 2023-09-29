@@ -89,6 +89,7 @@ import { FormInstance, ElNotification } from "element-plus";
 const formRef = ref<FormInstance>();
 const { $client } = useNuxtApp();
 const router = useRouter();
+const { public: prc } = useRuntimeConfig();
 
 type Form = {
   name: string;
@@ -113,7 +114,7 @@ const form = reactive<Form>({
 });
 
 const host = computed(() => {
-  return typeof window !== "undefined" ? location.host : "";
+  return prc.baseUrl.replaceAll("http://", "").replace("https://", "");
 });
 
 const submit = async (formInstance: FormInstance | undefined) => {

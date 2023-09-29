@@ -87,6 +87,7 @@ import { FormInstance, ElNotification } from "element-plus";
 const formRef = ref<FormInstance>();
 const { $client } = useNuxtApp();
 const { user, fetchUser } = useUser();
+const { public: prc } = useRuntimeConfig();
 
 type Form = {
   name: string;
@@ -121,7 +122,7 @@ const getPreviewSelectedAvatar = (selectedAvatar: File) => {
 };
 
 const host = computed(() => {
-  return typeof window !== "undefined" ? location.host : "";
+  return prc.baseUrl.replaceAll("http://", "").replace("https://", "");
 });
 
 const submit = async (formInstance: FormInstance | undefined) => {

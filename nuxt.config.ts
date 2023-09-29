@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     port: process.env.PORT,
     tokenSecret: process.env.TOKEN_SECRET,
     public: {
+      baseUrl: process.env.BASE_URL,
       appTitle: "Buat Event",
       appTagline: "Solusi Lengkap untuk Acara Anda",
       appDescription:

@@ -167,11 +167,11 @@ const events = computed(() => {
 });
 
 const host = computed(() => {
-  return typeof window !== "undefined" ? location.host : "";
+  return prc.baseUrl.replaceAll("http://", "").replace("https://", "");
 });
 
 const protocol = computed(() => {
-  return typeof window !== "undefined" ? location.protocol : "";
+  return new URL(prc.baseUrl).protocol;
 });
 </script>
 
