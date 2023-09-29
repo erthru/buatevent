@@ -3,7 +3,7 @@
     class="wrapper"
     style="z-index: 4"
     :style="{
-      width: menu.isSidebarOpen.value ? '350px' : '0px',
+      width: menu.isSidebarOpen.value ? '325px' : '0px',
       overflowX: menu.isSidebarOpen.value ? 'unset' : 'hidden',
     }"
   >
