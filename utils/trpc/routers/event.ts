@@ -33,6 +33,44 @@ export const eventRouter = router({
     }
   }),
 
+  getById: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const { id: _id, db } = ctx;
+        const { id } = input;
+
+        const organizer = await db.organizer.findUnique({
+          where: {
+            userId: _id,
+          },
+        });
+
+        const event = await db.event.findUnique({
+          include: {
+            eventTickets: true,
+          },
+          where: {
+            id,
+          },
+        });
+
+        if (event?.organizerId !== organizer?.id) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "unauthorized",
+          });
+        }
+
+        return event;
+      } catch (err: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
+
   getAllByUsername: publicProcedure
     .input(
       z.object({

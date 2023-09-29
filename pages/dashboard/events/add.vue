@@ -48,7 +48,7 @@ useLazyAsyncData("dashboardEventsAdd", async () => {
       },
     ]);
   } catch (err: any) {
-    setError(500, err.message);
+    setError(err?.data?.httpStatus || 500, err.message);
   }
 });
 </script>

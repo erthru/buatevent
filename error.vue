@@ -23,12 +23,14 @@
       >
         {{ errorCode }}
       </p>
-      <p style="text-align: justify; text-align: center; margin-bottom: 10px;">{{ errorMessage }}</p>
-      <a
-        :href="prc.baseUrl"
-        style="text-align: center; font-size: 14px"
-        >Kembali ke halaman utama</a
-      >
+      <p style="text-align: justify; text-align: center; margin-bottom: 10px">
+        {{ errorMessage }}
+      </p>
+      <p style="text-align: center">
+        <a :href="prc.baseUrl" style="font-size: 14px"
+          >Kembali ke halaman utama</a
+        >
+      </p>
     </ElCard>
   </div>
 </template>

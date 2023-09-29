@@ -65,7 +65,7 @@ const { data } = useLazyAsyncData("index", async () => {
       events,
     };
   } catch (err: any) {
-    setError(err.message === "not found" ? 404 : 500, err.message);
+    setError(err?.data?.httpStatus || 500, err.message);
   }
 });
 </script>

@@ -30,7 +30,12 @@ const { data } = useLazyAsyncData("slug", async () => {
       .replaceAll("https://", "");
 
     if (host === currentHost) {
-      throw new Error("not found");
+      throw {
+        data: {
+          httpStatus: 404,
+        },
+        message: "not found",
+      };
     }
 
     if (host !== currentHostWithoutUsername) {
@@ -45,12 +50,17 @@ const { data } = useLazyAsyncData("slug", async () => {
     });
 
     if (!event) {
-      throw new Error("not found");
+      throw {
+        data: {
+          httpStatus: 404,
+        },
+        message: "not found",
+      };
     }
 
     return event;
   } catch (err: any) {
-    setError(err.message === "not found" ? 404 : 500, err.message);
+    setError(err?.data?.httpStatus || 500, err.message);
   }
 });
 </script>

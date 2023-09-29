@@ -69,7 +69,7 @@
           <p>{{ row.isPublished ? "Dipublikasi" : "Draft" }}</p>
         </template>
       </ElTableColumn>
-      <ElTableColumn label="Aksi" width="215">
+      <ElTableColumn label="Aksi" width="238">
         <template #default="{ row }">
           <div style="display: flex; gap: 12px">
             <a
@@ -81,7 +81,7 @@
             <ElButton
               type="warning"
               @click="router.push(`/dashboard/events/${row.id}`)"
-              >Edit</ElButton
+              >Perbarui</ElButton
             >
           </div>
         </template>
@@ -151,7 +151,7 @@ const { data, pending: isLoading } = useLazyAsyncData(
 
       return await $client.event.getAllByOrganizer.query();
     } catch (err: any) {
-      setError(500, err.message);
+      setError(err?.data?.httpStatus || 500, err.message);
     }
   }
 );
