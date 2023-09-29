@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { protectedProcedure, router } from "..";
+import { protectedProcedure, publicProcedure, router } from "..";
 import { z } from "zod";
 import { writeFile } from "fs/promises";
 import { generateSlug } from "@/utils/helpers";
@@ -32,6 +32,95 @@ export const eventRouter = router({
       });
     }
   }),
+
+  getAllByUsername: publicProcedure
+    .input(
+      z.object({
+        username: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { db } = ctx;
+        const { username } = input;
+
+        const organizer = await db.organizer.findUnique({
+          where: {
+            username,
+          },
+        });
+
+        if (!organizer) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "not found",
+          });
+        }
+
+        const events = await db.event.findMany({
+          include: {
+            organizer: true,
+          },
+          where: {
+            organizerId: organizer?.id,
+          },
+        });
+
+        return events;
+      } catch (err: any) {
+        throw new TRPCError({
+          code:
+            err.message === "not found" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
+
+  getByUsernameAndSlug: publicProcedure
+    .input(
+      z.object({
+        username: z.string(),
+        slug: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { db } = ctx;
+        const { username, slug } = input;
+
+        const organizer = await db.organizer.findUnique({
+          where: {
+            username,
+          },
+        });
+
+        if (!organizer) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "not found",
+          });
+        }
+
+        const event = await db.event.findUnique({
+          include: {
+            organizer: true,
+            eventTickets: true,
+          },
+          where: {
+            slug,
+            organizerId: organizer?.id,
+          },
+        });
+
+        return event;
+      } catch (err: any) {
+        throw new TRPCError({
+          code:
+            err.message === "not found" ? "NOT_FOUND" : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
 
   add: protectedProcedure
     .input(
