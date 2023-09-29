@@ -41,12 +41,6 @@
         >
       </ElInput>
     </ElFormItem>
-    <p style="font-size: 12px; margin: -10px 0 16px 0">
-      Event yang dibuat nanti dapat diakses pada:
-      <span style="font-weight: 600"
-        >{{ form.username }}.{{ host }}/contoh-event</span
-      >
-    </p>
     <ElFormItem
       label="Email"
       prop="email"
