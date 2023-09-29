@@ -125,29 +125,33 @@ const state = reactive({
 const { data, pending: isLoading } = useLazyAsyncData(
   "dashboardEvents",
   async () => {
-    if (!user.value) {
-      await fetchUser();
+    try {
+      if (!user.value) {
+        await fetchUser();
+      }
+
+      if (user.value?.role !== "ORGANIZER") {
+        router.push("/dashboard");
+        return;
+      }
+
+      menu.setTitle("Event");
+
+      menu.setBreadcrumbs([
+        {
+          title: "Dashboard",
+          to: "/dashboard",
+        },
+        {
+          title: "Event",
+          to: "/dashboard/events",
+        },
+      ]);
+
+      return await $client.event.getAllByOrganizer.query();
+    } catch (err: any) {
+      throw new Error(err.message);
     }
-
-    if (user.value?.role !== "ORGANIZER") {
-      router.push("/dashboard");
-      return;
-    }
-
-    menu.setTitle("Event");
-
-    menu.setBreadcrumbs([
-      {
-        title: "Dashboard",
-        to: "/dashboard",
-      },
-      {
-        title: "Event",
-        to: "/dashboard/events",
-      },
-    ]);
-
-    return await $client.event.getAllByOrganizer.query();
   }
 );
 

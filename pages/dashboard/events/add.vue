@@ -20,30 +20,34 @@ definePageMeta({
 });
 
 useLazyAsyncData("dashboardEventsAdd", async () => {
-  if (!user.value) {
-    await fetchUser();
+  try {
+    if (!user.value) {
+      await fetchUser();
+    }
+
+    if (user.value?.role !== "ORGANIZER") {
+      router.push("/dashboard");
+      return;
+    }
+
+    menu.setTitle("Tambah Event");
+
+    menu.setBreadcrumbs([
+      {
+        title: "Dashboard",
+        to: "/dashboard",
+      },
+      {
+        title: "Event",
+        to: "/dashboard/events",
+      },
+      {
+        title: "Tambah Event",
+        to: "/dashbaord/events/add",
+      },
+    ]);
+  } catch (err: any) {
+    throw new Error(err.message);
   }
-
-  if (user.value?.role !== "ORGANIZER") {
-    router.push("/dashboard");
-    return;
-  }
-
-  menu.setTitle("Tambah Event");
-
-  menu.setBreadcrumbs([
-    {
-      title: "Dashboard",
-      to: "/dashboard",
-    },
-    {
-      title: "Event",
-      to: "/dashboard/events",
-    },
-    {
-      title: "Tambah Event",
-      to: "/dashbaord/events/add",
-    },
-  ]);
 });
 </script>

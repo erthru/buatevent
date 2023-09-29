@@ -17,14 +17,34 @@ definePageMeta({
   layout: "dashboard",
 });
 
-useLazyAsyncData("dashboard", async () => {
-  menu.setTitle("Dashboard");
+const { error } = useLazyAsyncData("dashboard", async () => {
+  try {
+    menu.setTitle("Dashboard");
 
-  menu.setBreadcrumbs([
-    {
-      title: "Dashboard",
-      to: "/dashboard",
-    },
-  ]);
+    menu.setBreadcrumbs([
+      {
+        title: "Dashboard",
+        to: "/dashboard",
+      },
+    ]);
+  } catch (err: any) {
+    throw new Error(err.message);
+  }
 });
+
+watch(
+  () => error.value,
+  (val) => {
+    if (val) {
+      ElNotification({
+        title: "Error",
+        message: val.message,
+        type: "error",
+      });
+    }
+  },
+  {
+    immediate: true,
+  }
+);
 </script>

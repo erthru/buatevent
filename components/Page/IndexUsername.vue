@@ -1,51 +1,21 @@
 <template>
-  <pre>{{ state.events }}</pre>
+  <pre>{{ props.events }}</pre>
 </template>
 
 <script lang="ts" setup>
 import { Prisma } from "@prisma/client";
+import { PropType } from "nuxt/dist/app/compat/capi";
 
-const { $client } = useNuxtApp();
-const { public: prc } = useRuntimeConfig();
-
-const state = reactive({
-  events: [] as Prisma.EventGetPayload<{
-    include: {
-      organizer: true;
-    };
-  }>[],
-});
-
-onMounted(async () => {
-  const currenthost = window.location.host;
-  let username = currenthost.split(".")[0];
-  const currentHostWithoutUsername = currenthost.split(".").slice(1).join(".");
-  const host = prc.baseUrl.replaceAll("http://", "").replaceAll("https://", "");
-
-  if (host !== currentHostWithoutUsername) {
-    try {
-      username = await $client.external.resolveCname.query({
-        domain: currentHostWithoutUsername,
-      });
-    } catch (err: any) {
-      throw showError({
-        statusCode: 500,
-        statusMessage: err.message,
-      });
-    }
-  }
-
-  try {
-    const events = await $client.event.getAllByUsername.query({
-      username,
-    });
-
-    state.events = events as any;
-  } catch (err: any) {
-    throw showError({
-      statusCode: err.message === "not found" ? 404 : 500,
-      statusMessage: err.message,
-    });
-  }
+const props = defineProps({
+  events: Array as PropType<
+    Prisma.EventGetPayload<{
+      include: {
+        organizer: true;
+      };
+    }>[]
+  >,
+  default: () => {
+    return [];
+  },
 });
 </script>

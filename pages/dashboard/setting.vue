@@ -29,20 +29,40 @@ definePageMeta({
   layout: "dashboard",
 });
 
-useLazyAsyncData("dashboardSetting", async () => {
-  menu.setTitle("Pengaturan");
+const { error } = useLazyAsyncData("dashboardSetting", async () => {
+  try {
+    menu.setTitle("Pengaturan");
 
-  menu.setBreadcrumbs([
-    {
-      title: "Dashboard",
-      to: "/dashboard",
-    },
-    {
-      title: "Pengaturan",
-      to: "/dashboard/setting",
-    },
-  ]);
+    menu.setBreadcrumbs([
+      {
+        title: "Dashboard",
+        to: "/dashboard",
+      },
+      {
+        title: "Pengaturan",
+        to: "/dashboard/setting",
+      },
+    ]);
+  } catch (err: any) {
+    throw new Error(err.message);
+  }
 });
+
+watch(
+  () => error.value,
+  (val) => {
+    if (val) {
+      ElNotification({
+        title: "Error",
+        message: val.message,
+        type: "error",
+      });
+    }
+  },
+  {
+    immediate: true,
+  }
+);
 </script>
 
 <style scoped>
