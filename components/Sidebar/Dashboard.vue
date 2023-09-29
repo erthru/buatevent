@@ -48,7 +48,7 @@
             style="padding: 0 16px 0 10px"
             :style="{
               borderLeft: `4px solid ${
-                item.isActive ? '#f0932b' : 'transparent'
+                item.isActive ? 'var(--el-color-primary)' : 'transparent'
               }`,
             }"
           >
@@ -69,13 +69,21 @@
               >
                 <ElIcon
                   style="font-size: 20px"
-                  :style="{ color: `${item.isActive ? '#f0932b' : '#767676'}` }"
+                  :style="{
+                    color: `${
+                      item.isActive ? 'var(--el-color-primary)' : '#767676'
+                    }`,
+                  }"
                 >
                   <component :is="item.icon" />
                 </ElIcon>
                 <p
                   style="font-size: 17px; font-weight: 500"
-                  :style="{ color: `${item.isActive ? '#f0932b' : '#767676'}` }"
+                  :style="{
+                    color: `${
+                      item.isActive ? 'var(--el-color-primary)' : '#767676'
+                    }`,
+                  }"
                 >
                   {{ item.title }}
                 </p>
@@ -103,7 +111,7 @@
           to="/dashboard/events/add"
           style="
             margin-left: auto;
-            background-color: #f0932b;
+            background-color: var(--el-color-primary);
             height: 36px;
             width: 36px;
             border-radius: 100%;

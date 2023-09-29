@@ -7,6 +7,7 @@
 <script setup lang="ts">
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
+const { setError } = useCustomError();
 
 useHead({
   title: `Dashboard | ${prc.appTitle}`,
@@ -17,7 +18,7 @@ definePageMeta({
   layout: "dashboard",
 });
 
-const { error } = useLazyAsyncData("dashboard", async () => {
+useLazyAsyncData("dashboard", async () => {
   try {
     menu.setTitle("Dashboard");
 
@@ -28,23 +29,7 @@ const { error } = useLazyAsyncData("dashboard", async () => {
       },
     ]);
   } catch (err: any) {
-    throw new Error(err.message);
+    setError(500, err.message);
   }
 });
-
-watch(
-  () => error.value,
-  (val) => {
-    if (val) {
-      ElNotification({
-        title: "Error",
-        message: val.message,
-        type: "error",
-      });
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 </script>

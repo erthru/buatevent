@@ -106,6 +106,7 @@ const menu = useMenu();
 const { $client } = useNuxtApp();
 const router = useRouter();
 const { user, fetchUser } = useUser();
+const { setError } = useCustomError();
 
 useHead({
   title: `Event | ${prc.appTitle}`,
@@ -122,7 +123,7 @@ const state = reactive({
   pageSize: 15,
 });
 
-const { data, pending: isLoading, error } = useLazyAsyncData(
+const { data, pending: isLoading } = useLazyAsyncData(
   "dashboardEvents",
   async () => {
     try {
@@ -150,7 +151,7 @@ const { data, pending: isLoading, error } = useLazyAsyncData(
 
       return await $client.event.getAllByOrganizer.query();
     } catch (err: any) {
-      throw new Error(err.message);
+      setError(500, err.message);
     }
   }
 );
@@ -177,22 +178,6 @@ const host = computed(() => {
 const protocol = computed(() => {
   return new URL(prc.baseUrl).protocol;
 });
-
-watch(
-  () => error.value,
-  (val) => {
-    if (val) {
-      ElNotification({
-        title: "Error",
-        message: val.message,
-        type: "error",
-      });
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 </script>
 
 <style scoped>

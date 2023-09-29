@@ -14,12 +14,13 @@
 import { Prisma } from "@prisma/client";
 const { ssrContext, $client } = useNuxtApp();
 const { public: prc } = useRuntimeConfig();
+const { setError } = useCustomError();
 
 useHead({
   title: `${prc.appTitle} | ${prc.appTagline}`,
 });
 
-const { data, error } = useLazyAsyncData("index", async () => {
+const { data } = useLazyAsyncData("index", async () => {
   try {
     const host = prc.baseUrl
       .replaceAll("http://", "")
@@ -64,23 +65,7 @@ const { data, error } = useLazyAsyncData("index", async () => {
       events,
     };
   } catch (err: any) {
-    throw new Error(err.message);
+    setError(err.message === "not found" ? 404 : 500, err.message);
   }
 });
-
-watch(
-  () => error.value,
-  (val) => {
-    if (val) {
-      ElNotification({
-        title: "Error",
-        message: val.message,
-        type: "error",
-      });
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 </script>

@@ -19,6 +19,7 @@
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
 const { user } = useUser();
+const { setError } = useCustomError();
 
 useHead({
   title: `Pengaturan | ${prc.appTitle}`,
@@ -29,7 +30,7 @@ definePageMeta({
   layout: "dashboard",
 });
 
-const { error } = useLazyAsyncData("dashboardSetting", async () => {
+useLazyAsyncData("dashboardSetting", async () => {
   try {
     menu.setTitle("Pengaturan");
 
@@ -44,25 +45,9 @@ const { error } = useLazyAsyncData("dashboardSetting", async () => {
       },
     ]);
   } catch (err: any) {
-    throw new Error(err.message);
+    setError(500, err.message);
   }
 });
-
-watch(
-  () => error.value,
-  (val) => {
-    if (val) {
-      ElNotification({
-        title: "Error",
-        message: val.message,
-        type: "error",
-      });
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 </script>
 
 <style scoped>

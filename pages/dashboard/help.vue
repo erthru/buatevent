@@ -7,6 +7,7 @@
 <script setup lang="ts">
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
+const { setError } = useCustomError();
 
 useHead({
   title: `Bantuan | ${prc.appTitle}`,
@@ -17,7 +18,7 @@ definePageMeta({
   layout: "dashboard",
 });
 
-const { error } = useLazyAsyncData("dashboardHelp", async () => {
+useLazyAsyncData("dashboardHelp", async () => {
   try {
     menu.setTitle("Bantuan");
 
@@ -32,23 +33,7 @@ const { error } = useLazyAsyncData("dashboardHelp", async () => {
       },
     ]);
   } catch (err: any) {
-    throw new Error(err.message);
+    setError(500, err.message);
   }
 });
-
-watch(
-  () => error.value,
-  (val) => {
-    if (val) {
-      ElNotification({
-        title: "Error",
-        message: val.message,
-        type: "error",
-      });
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 </script>

@@ -9,6 +9,7 @@ const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
 const { user, fetchUser } = useUser();
 const router = useRouter();
+const { setError } = useCustomError();
 
 useHead({
   title: `Tambah Event | ${prc.appTitle}`,
@@ -19,7 +20,7 @@ definePageMeta({
   layout: "dashboard",
 });
 
-const { error } = useLazyAsyncData("dashboardEventsAdd", async () => {
+useLazyAsyncData("dashboardEventsAdd", async () => {
   try {
     if (!user.value) {
       await fetchUser();
@@ -47,23 +48,7 @@ const { error } = useLazyAsyncData("dashboardEventsAdd", async () => {
       },
     ]);
   } catch (err: any) {
-    throw new Error(err.message);
+    setError(500, err.message);
   }
 });
-
-watch(
-  () => error.value,
-  (val) => {
-    if (val) {
-      ElNotification({
-        title: "Error",
-        message: val.message,
-        type: "error",
-      });
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 </script>

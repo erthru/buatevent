@@ -10,8 +10,9 @@ definePageMeta({
 const { $client, ssrContext } = useNuxtApp();
 const { public: prc } = useRuntimeConfig();
 const route = useRoute();
+const { setError } = useCustomError();
 
-const { data, error } = useLazyAsyncData("slug", async () => {
+const { data } = useLazyAsyncData("slug", async () => {
   try {
     const currentHost = process.server
       ? ssrContext?.event.node.req.headers.host
@@ -49,23 +50,7 @@ const { data, error } = useLazyAsyncData("slug", async () => {
 
     return event;
   } catch (err: any) {
-    throw new Error(err.message);
+    setError(err.message === "not found" ? 404 : 500, err.message);
   }
 });
-
-watch(
-  () => error.value,
-  (val) => {
-    if (val) {
-      ElNotification({
-        title: "Error",
-        message: val.message,
-        type: "error",
-      });
-    }
-  },
-  {
-    immediate: true,
-  }
-);
 </script>
