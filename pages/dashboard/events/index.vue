@@ -122,7 +122,7 @@ const state = reactive({
   pageSize: 15,
 });
 
-const { data, pending: isLoading } = useLazyAsyncData(
+const { data, pending: isLoading, error } = useLazyAsyncData(
   "dashboardEvents",
   async () => {
     try {
@@ -177,6 +177,22 @@ const host = computed(() => {
 const protocol = computed(() => {
   return new URL(prc.baseUrl).protocol;
 });
+
+watch(
+  () => error.value,
+  (val) => {
+    if (val) {
+      ElNotification({
+        title: "Error",
+        message: val.message,
+        type: "error",
+      });
+    }
+  },
+  {
+    immediate: true,
+  }
+);
 </script>
 
 <style scoped>

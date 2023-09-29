@@ -19,7 +19,7 @@ definePageMeta({
   layout: "dashboard",
 });
 
-useLazyAsyncData("dashboardEventsAdd", async () => {
+const { error } = useLazyAsyncData("dashboardEventsAdd", async () => {
   try {
     if (!user.value) {
       await fetchUser();
@@ -50,4 +50,20 @@ useLazyAsyncData("dashboardEventsAdd", async () => {
     throw new Error(err.message);
   }
 });
+
+watch(
+  () => error.value,
+  (val) => {
+    if (val) {
+      ElNotification({
+        title: "Error",
+        message: val.message,
+        type: "error",
+      });
+    }
+  },
+  {
+    immediate: true,
+  }
+);
 </script>
