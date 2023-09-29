@@ -1,5 +1,6 @@
 <template>
   <div
+    class="wrapper"
     style="
       z-index: 9999;
       display: flex;
@@ -12,7 +13,7 @@
       align-items: center;
     "
   >
-    <ElCard style="margin: auto">
+    <ElCard style="width: 100%; max-width: 460px; margin: auto">
       <p
         style="
           text-align: center;
@@ -23,7 +24,14 @@
       >
         {{ errorCode }}
       </p>
-      <p style="text-align: justify; text-align: center; margin-bottom: 10px">
+      <p
+        style="
+          text-align: justify;
+          text-align: center;
+          margin-bottom: 6px;
+          margin-top: 16px;
+        "
+      >
         {{ errorMessage }}
       </p>
       <p style="text-align: center">
@@ -39,3 +47,15 @@
 const { errorCode, errorMessage } = useCustomError();
 const { public: prc } = useRuntimeConfig();
 </script>
+
+<style scoped>
+.wrapper {
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .wrapper {
+    padding: 24px;
+  }
+}
+</style>

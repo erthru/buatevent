@@ -23,6 +23,7 @@
       <a
         :href="`${protocol}//${user?.organizer?.username}.${host}/${props.event.slug}`"
         target="_blank"
+        style="font-weight: 500;"
         >{{
           `${protocol}//${user?.organizer?.username}.${host}/${props.event.slug}`
         }}</a
@@ -187,6 +188,8 @@ const { $client } = useNuxtApp();
 const router = useRouter();
 const { public: prc } = useRuntimeConfig();
 const { user } = useUser();
+const route = useRoute();
+const emit = defineEmits(["updated"]);
 
 const props = defineProps({
   event: {
@@ -285,7 +288,8 @@ const submit = async (formInstance: FormInstance | undefined) => {
         thumbnailBase64 = await convertFileToBase64(state.selectedThumbnail);
       }
 
-      const event = await $client.event.add.mutate({
+      await $client.event.update.mutate({
+        id: Number(route.params.id),
         title: form.title,
         body: form.body,
         startAt: form.startAt,
@@ -297,11 +301,11 @@ const submit = async (formInstance: FormInstance | undefined) => {
 
       ElNotification({
         title: "Sukses",
-        message: "Berhasil menambahkan event",
+        message: "Berhasil memperbarui event",
         type: "success",
       });
 
-      router.push(`/dashboard/events/${event.id}`);
+      emit("updated");
     } catch (err: any) {
       ElNotification({
         title: "Error",

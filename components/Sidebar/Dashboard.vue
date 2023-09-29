@@ -13,7 +13,6 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        border-right: 1px solid #e5e5e5;
         transition: width 0.2s;
         overflow-y: auto;
       "
