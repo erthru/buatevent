@@ -37,18 +37,22 @@ export const eventRouter = router({
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       try {
-        const { id: _id, db } = ctx;
+        const { id: userId, db } = ctx;
         const { id } = input;
 
         const organizer = await db.organizer.findUnique({
           where: {
-            userId: _id,
+            userId,
           },
         });
 
         const event = await db.event.findUnique({
           include: {
-            eventTickets: true,
+            _count: {
+              select: {
+                eventTickets: true,
+              },
+            },
           },
           where: {
             id,
@@ -256,11 +260,11 @@ export const eventRouter = router({
           isPublished,
         } = input;
 
-        const { db, id: _id } = ctx;
+        const { db, id: userId } = ctx;
 
         const organizer = await db.organizer.findUnique({
           where: {
-            userId: _id,
+            userId,
           },
         });
 
@@ -278,9 +282,6 @@ export const eventRouter = router({
         }
 
         event = await db.event.update({
-          where: {
-            id,
-          },
           data: {
             title,
             slug: title !== event?.title ? generateSlug(title) : undefined,
@@ -289,6 +290,9 @@ export const eventRouter = router({
             endAt,
             type,
             isPublished,
+          },
+          where: {
+            id,
           },
         });
 
@@ -315,6 +319,65 @@ export const eventRouter = router({
         }
 
         return event;
+      } catch (err: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { db, id: userId } = ctx;
+        const { id } = input;
+
+        const organizer = await db.organizer.findUnique({
+          where: {
+            userId,
+          },
+        });
+
+        const event = await db.event.findUnique({
+          include: {
+            _count: {
+              select: {
+                eventMembers: true,
+              },
+            },
+          },
+          where: {
+            id,
+          },
+        });
+
+        if (event?.organizerId !== organizer?.id) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "unauthorized",
+          });
+        }
+
+        if ((event?._count?.eventMembers || 0) > 0) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "cannot delete, member exists",
+          });
+        }
+
+        await db.eventTicket.deleteMany({
+          where: {
+            eventId: event?.id,
+          },
+        });
+
+        await db.event.delete({
+          where: {
+            id,
+          },
+        });
       } catch (err: any) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

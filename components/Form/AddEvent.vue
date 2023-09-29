@@ -136,13 +136,13 @@
         <img
           v-if="state.selectedThumbnail"
           :src="getPreviewSelectedAvatar(state.selectedThumbnail)"
-          style="width: 400px; height: 250px; object-fit: cover"
+          style="width: 220px; height: 150px; object-fit: cover"
         />
         <div
           v-else
           style="
-            width: 400px;
-            height: 250px;
+            width: 220px;
+            height: 150px;
             display: flex;
             align-items: center;
             background-color: #e6e6e6;
@@ -154,7 +154,7 @@
         </div>
       </ElUpload>
     </ElFormItem>
-    <ElButton type="primary" @click="submit(formRef)" style="width: max-content"
+    <ElButton type="primary" style="width: max-content" @click="submit(formRef)"
       >Simpan</ElButton
     >
   </ElForm>

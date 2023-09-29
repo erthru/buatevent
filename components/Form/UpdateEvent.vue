@@ -23,7 +23,7 @@
       <a
         :href="`${protocol}//${user?.organizer?.username}.${host}/${props.event.slug}`"
         target="_blank"
-        style="font-weight: 500;"
+        style="font-weight: 500"
         >{{
           `${protocol}//${user?.organizer?.username}.${host}/${props.event.slug}`
         }}</a
@@ -153,13 +153,13 @@
               ? `/uploads/${props.event.thumbnail}`
               : getPreviewSelectedAvatar(state.selectedThumbnail!!)
           "
-          style="width: 400px; height: 250px; object-fit: cover"
+          style="width: 220px; height: 150px; object-fit: cover"
         />
         <div
           v-else
           style="
-            width: 400px;
-            height: 250px;
+            width: 220px;
+            height: 150px;
             display: flex;
             align-items: center;
             background-color: #e6e6e6;
@@ -171,9 +171,47 @@
         </div>
       </ElUpload>
     </ElFormItem>
-    <ElButton type="primary" @click="submit(formRef)" style="width: max-content"
-      >Simpan</ElButton
-    >
+    <div class="c2c">
+      <ElButton
+        type="primary"
+        style="width: max-content"
+        @click="submit(formRef)"
+        >Simpan</ElButton
+      >
+      <ElButton
+        type="danger"
+        style="width: max-content"
+        @click="state.isDeleteModalShown = true"
+        >Hapus</ElButton
+      >
+    </div>
+    <ClientOnly>
+      <ElDialog
+        v-model="state.isDeleteModalShown"
+        title="Hapus Event"
+        :show-close="false"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+      >
+        <p>Apakah anda yakin dengan keputusan ini?</p>
+        <template #footer>
+          <div>
+            <ElButton
+              v-if="!state.isDeleting"
+              @click="state.isDeleteModalShown = false"
+              >Tutup</ElButton
+            >
+            <ElButton
+              type="primary"
+              @click="_delete"
+              :disabled="state.isDeleting"
+              v-loading="state.isDeleting"
+              >Hapus</ElButton
+            >
+          </div>
+        </template>
+      </ElDialog>
+    </ClientOnly>
   </ElForm>
 </template>
 
@@ -195,7 +233,11 @@ const props = defineProps({
   event: {
     type: Object as PropType<Prisma.EventGetPayload<{
       include: {
-        eventTickets: true;
+        _count: {
+          select: {
+            eventTickets: true;
+          };
+        };
       };
     }> | null>,
     default: () => {
@@ -243,6 +285,8 @@ const state = reactive({
   isLoading: false,
   selectedThumbnail: null as File | null,
   uploadThumbnailKey: `${new Date().getTime()}-utk`,
+  isDeleteModalShown: false,
+  isDeleting: false,
 });
 
 const form = reactive<Form>({
@@ -315,6 +359,32 @@ const submit = async (formInstance: FormInstance | undefined) => {
     } finally {
       state.isLoading = false;
     }
+  }
+};
+
+const _delete = async () => {
+  try {
+    state.isDeleting = true;
+
+    await $client.event.delete.mutate({
+      id: Number(route.params.id),
+    });
+
+    ElNotification({
+      title: "Sukses",
+      message: "Berhasil menghapus event",
+      type: "success",
+    });
+
+    router.push("/dashboard/events");
+  } catch (err: any) {
+    ElNotification({
+      title: "Error",
+      message: err.message,
+      type: "error",
+    });
+  } finally {
+    state.isDeleting = false;
   }
 };
 </script>

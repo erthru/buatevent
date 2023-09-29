@@ -1,5 +1,19 @@
 <template>
-  <ElCard>
+  <NuxtLink
+    :to="`/dashboard/events/${route.params.id}/tickets`"
+    style="color: white; font-weight: 500"
+  >
+    <ElAlert :closable="false" type="warning" effect="dark">
+      <p>
+        {{
+          data?._count.eventTickets === 0
+            ? "Event ini belum mempunyai tiket, silahkan atur tiket di sini"
+            : "Anda dapat mengatur tiket di sini"
+        }}
+      </p>
+    </ElAlert></NuxtLink
+  >
+  <ElCard style="margin-top: 16px">
     <FormUpdateEvent
       :key="state.formKey"
       v-loading="isLoading"
