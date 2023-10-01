@@ -86,7 +86,7 @@ watch(
 
 <style scoped>
 nav {
-  padding: 14px 16px;
+  padding: 12px 16px;
 }
 
 nav .search {
@@ -95,7 +95,7 @@ nav .search {
 
 @media (min-width: 768px) {
   nav {
-    padding: 18px 24px;
+    padding: 14px 24px;
   }
 
   nav .search {
