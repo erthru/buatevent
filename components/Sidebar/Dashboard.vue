@@ -103,7 +103,7 @@
           color: black;
         "
       >
-        <p style="line-height: 21px; font-size: 15px; font-weight: 500">
+        <p style="line-height: 21px; font-size: 15px; font-weight: 500; color: #303133">
           Buat Event<br />Baru
         </p>
         <div

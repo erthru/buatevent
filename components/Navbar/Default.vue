@@ -30,12 +30,20 @@
         font-size: 14px;
       "
     >
-      <NuxtLink to="/dashboard/events/add" style="font-weight: 500"
+      <NuxtLink
+        to="/dashboard/events/add"
+        style="font-weight: 500; color: #303133"
         >Buat Event</NuxtLink
       >
-      <NuxtLink to="/help" style="font-weight: 500">Bantuan</NuxtLink>
-      <NuxtLink to="/login" style="font-weight: 500">Login</NuxtLink>
-      <NuxtLink to="/register" style="font-weight: 500">Daftar</NuxtLink>
+      <NuxtLink to="/help" style="font-weight: 500; color: #303133"
+        >Bantuan</NuxtLink
+      >
+      <NuxtLink to="/login" style="font-weight: 500; color: #303133"
+        >Login</NuxtLink
+      >
+      <NuxtLink to="/register" style="font-weight: 500; color: #303133"
+        >Daftar</NuxtLink
+      >
     </div>
   </nav>
 </template>

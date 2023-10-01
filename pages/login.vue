@@ -8,7 +8,7 @@
     "
   >
     <ElCard class="card">
-      <p style="font-size: 28px; font-weight: 600">Login</p>
+      <p style="font-size: 28px; font-weight: 600; color: #303133">Login</p>
       <FormLogin style="margin-top: 16px" />
     </ElCard>
     <p style="margin: 8px auto; font-size: 14px">

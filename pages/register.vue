@@ -9,7 +9,7 @@
     "
   >
     <ElCard class="card">
-      <p style="font-size: 28px; font-weight: 600">Daftar</p>
+      <p style="font-size: 28px; font-weight: 600; color: #303133">Daftar</p>
       <FormRegister style="margin-top: 16px" />
     </ElCard>
     <p style="margin: 8px auto; font-size: 14px">
