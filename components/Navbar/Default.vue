@@ -12,7 +12,13 @@
       boxShadow: state.isTransparent ? 'none' : 'var(--el-box-shadow-light)',
     }"
   >
-    <p style="font-weight: 600">LOGO HERE</p>
+    <NuxtLink to="/">
+      <img
+        src="/images/logo.png"
+        alt="logo"
+        style="width: auto; height: 21px"
+      />
+    </NuxtLink>
     <ElInput
       placeholder="Cari Event ..."
       class="search"
@@ -26,7 +32,7 @@
         margin-left: auto;
         display: flex;
         align-items: center;
-        column-gap: 21px;
+        column-gap: 26px;
         font-size: 14px;
       "
     >

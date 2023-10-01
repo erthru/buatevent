@@ -21,16 +21,16 @@
         overflowX: menu.isSidebarOpen.value ? 'unset' : 'hidden',
       }"
     >
-      <p
-        style="
-          margin: 0 auto;
-          font-size: 28px;
-          font-weight: 600;
-          margin-top: 52px;
-        "
+      <NuxtLink
+        to="/"
+        style="margin-top: 52px; margin-left: auto; margin-right: auto"
       >
-        LOGO HERE
-      </p>
+        <img
+          src="/images/logo.png"
+          alt="log"
+          style="width: 165px; height: auto"
+        />
+      </NuxtLink>
       <ul
         style="
           padding-bottom: 38px;
@@ -103,7 +103,14 @@
           color: black;
         "
       >
-        <p style="line-height: 21px; font-size: 15px; font-weight: 500; color: #303133">
+        <p
+          style="
+            line-height: 21px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #303133;
+          "
+        >
           Buat Event<br />Baru
         </p>
         <div
