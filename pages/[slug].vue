@@ -3,6 +3,8 @@
 </template>
 
 <script lang="ts" setup>
+import dns from "dns";
+
 definePageMeta({
   layout: "independent",
 });
@@ -39,8 +41,15 @@ const { data } = useLazyAsyncData("slug", async () => {
     }
 
     if (host !== currentHostWithoutUsername) {
-      username = await $client.external.resolveCname.query({
-        domain: currentHostWithoutUsername!!,
+      username = await new Promise((resolve, reject) => {
+        dns.resolveCname(currentHostWithoutUsername!!, (error, addresses) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve(addresses[0]);
+        });
       });
     }
 

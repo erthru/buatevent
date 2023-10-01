@@ -8,6 +8,8 @@
 
 <script setup lang="ts">
 import { Prisma } from "@prisma/client";
+import dns from "dns";
+
 const { ssrContext, $client } = useNuxtApp();
 const { public: prc } = useRuntimeConfig();
 const { setError } = useCustomError();
@@ -46,8 +48,15 @@ const { data } = useLazyAsyncData("index", async () => {
         .join(".");
 
       if (host !== currentHostWithoutUsername) {
-        username = await $client.external.resolveCname.query({
-          domain: currentHostWithoutUsername!!,
+        username = await new Promise((resolve, reject) => {
+          dns.resolveCname(currentHostWithoutUsername!!, (error, addresses) => {
+            if (error) {
+              reject(error);
+              return;
+            }
+
+            resolve(addresses[0]);
+          });
         });
       }
 
