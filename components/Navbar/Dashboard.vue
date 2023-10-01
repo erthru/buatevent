@@ -45,7 +45,7 @@ const { user } = useUser();
 
 <style scoped>
 header {
-  padding: 16px;
+  padding: 16px 0;
 }
 
 header .toggle {
@@ -58,7 +58,7 @@ header .title {
 
 @media (min-width: 768px) {
   header {
-    padding: 24px;
+    padding: 24px 0;
   }
 
   header .title {

@@ -3,7 +3,8 @@
     class="wrapper"
     style="z-index: 4"
     :style="{
-      width: menu.isSidebarOpen.value ? '325px' : '0px',
+      minWidth: menu.isSidebarOpen.value ? '275px' : '0px',
+      maxWidth: menu.isSidebarOpen.value ? '275px' : '0px',
       overflowX: menu.isSidebarOpen.value ? 'unset' : 'hidden',
     }"
   >
@@ -13,11 +14,12 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        transition: width 0.2s;
+        transition: all 0.2s;
         overflow-y: auto;
       "
       :style="{
-        width: menu.isSidebarOpen.value ? '275px' : '0px',
+        minWidth: menu.isSidebarOpen.value ? '275px' : '0px',
+        maxWidth: menu.isSidebarOpen.value ? '275px' : '0px',
         overflowX: menu.isSidebarOpen.value ? 'unset' : 'hidden',
       }"
     >
