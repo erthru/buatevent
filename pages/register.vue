@@ -4,7 +4,7 @@
       display: flex;
       flex-direction: column;
       width: 100%;
-      padding-top: 32px;
+      padding-top: 40px;
       padding-bottom: 32px;
     "
   >

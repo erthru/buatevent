@@ -61,6 +61,13 @@ onMounted(() => {
     checkTransparent();
   });
 });
+
+watch(
+  () => route.path,
+  () => {
+    checkTransparent();
+  }
+);
 </script>
 
 <style scoped>
