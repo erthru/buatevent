@@ -70,7 +70,7 @@
                   style="font-size: 20px"
                   :style="{
                     color: `${
-                      item.isActive ? 'var(--el-color-primary)' : '#767676'
+                      item.isActive ? 'var(--el-color-primary)' : '#909399'
                     }`,
                   }"
                 >
@@ -80,7 +80,7 @@
                   style="font-size: 17px; font-weight: 500"
                   :style="{
                     color: `${
-                      item.isActive ? 'var(--el-color-primary)' : '#767676'
+                      item.isActive ? 'var(--el-color-primary)' : '#909399'
                     }`,
                   }"
                 >
