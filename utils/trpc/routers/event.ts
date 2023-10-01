@@ -101,6 +101,7 @@ export const eventRouter = router({
 
         const events = await db.event.findMany({
           include: {
+            category: true,
             organizer: true,
           },
           where: {
@@ -145,6 +146,7 @@ export const eventRouter = router({
 
         const event = await db.event.findUnique({
           include: {
+            category: true,
             organizer: true,
             eventTickets: true,
           },
@@ -153,6 +155,13 @@ export const eventRouter = router({
             organizerId: organizer?.id,
           },
         });
+
+        if (!event?.isPublished) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "not found",
+          });
+        }
 
         return event;
       } catch (err: any) {
