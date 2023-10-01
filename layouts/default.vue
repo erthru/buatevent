@@ -9,12 +9,12 @@
 
 <style scoped>
 .wrapper {
-  padding: 16px;
+  padding: 0 16px 16px 16px;
 }
 
 @media (min-width: 768px) {
   .wrapper {
-    padding: 24px;
+    padding: 0 24px 24px 24px;
   }
 }
 </style>

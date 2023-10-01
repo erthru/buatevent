@@ -1,3 +1,3 @@
 <template>
-  <div style="height: 4000px; width: 100%;">conntent</div>
+  <p style="height: 4000px;">content</p>
 </template>

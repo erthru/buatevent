@@ -7,6 +7,7 @@
     }"
   >
     <div
+      class="wrapper"
       style="
         display: flex;
         width: 100%;
@@ -69,7 +70,7 @@ const state = reactive({
 });
 
 const checkTransparent = () => {
-  state.isTransparent = route.path === "/" && window.scrollY < 10;
+  state.isTransparent = route.path === "/" && window.scrollY < 1;
 };
 
 onMounted(() => {
@@ -90,20 +91,20 @@ watch(
 </script>
 
 <style scoped>
-nav {
+nav .wrapper {
   padding: 12px 16px;
 }
 
-nav .search {
+nav .wrapper .search {
   max-width: 80%;
 }
 
 @media (min-width: 768px) {
-  nav {
+  nav .wrapper {
     padding: 14px 24px;
   }
 
-  nav .search {
+  nav .wrapper .search {
     max-width: 40%;
   }
 }
