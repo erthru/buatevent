@@ -26,3 +26,15 @@ logs
 # Uploads
 public/uploads/*
 !public/uploads/default.png
+!public/uploads/category-academy.jpeg
+!public/uploads/category-business.jpeg
+!public/uploads/category-community.jpeg
+!public/uploads/category-conference.jpeg
+!public/uploads/category-expo.jpeg
+!public/uploads/category-food-and-drink.jpeg
+!public/uploads/category-music.jpeg
+!public/uploads/category-other.jpeg
+!public/uploads/category-performing-art.jpeg
+!public/uploads/category-politic.jpeg
+!public/uploads/category-sport.jpg
+!public/uploads/category-festival.jpeg

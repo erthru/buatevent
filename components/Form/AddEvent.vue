@@ -124,6 +124,29 @@
           />
         </ElSelect>
       </ElFormItem>
+      <ElFormItem
+        label="Kategori"
+        prop="categoryId"
+        :rules="{
+          required: true,
+          trigger: 'blur',
+        }"
+        style="width: 100%"
+      >
+        <ElSelect
+          v-model="form.categoryId"
+          class="m-2"
+          placeholder="Pilih Kategori"
+          style="width: 100%"
+        >
+          <ElOption
+            v-for="(item, i) in state.categories"
+            :key="`select-category-${i}`"
+            :label="item.name"
+            :value="item.id.toString()"
+          />
+        </ElSelect>
+      </ElFormItem>
     </div>
     <ElFormItem label="Thumbnail" prop="thumbnail">
       <ElUpload
@@ -162,6 +185,7 @@
 
 <script lang="ts" setup>
 import { Plus } from "@element-plus/icons-vue";
+import { Prisma } from "@prisma/client";
 import { FormInstance, ElNotification } from "element-plus";
 
 const formRef = ref<FormInstance>();
@@ -175,6 +199,7 @@ type Form = {
   isPublished: boolean;
   startAt: string;
   endAt: string;
+  categoryId: string;
 };
 
 const typeOptions = [
@@ -207,6 +232,7 @@ const state = reactive({
   isLoading: false,
   selectedThumbnail: null as File | null,
   uploadThumbnailKey: `${new Date().getTime()}-utk`,
+  categories: [] as Prisma.CategoryGetPayload<{}>[],
 });
 
 const form = reactive<Form>({
@@ -216,6 +242,7 @@ const form = reactive<Form>({
   isPublished: false,
   startAt: "",
   endAt: "",
+  categoryId: "",
 });
 
 const onSelectThumbnail = async (selectedFile: any) => {
@@ -226,6 +253,19 @@ const onSelectThumbnail = async (selectedFile: any) => {
 
 const getPreviewSelectedAvatar = (selectedThumbnail: File) => {
   return URL.createObjectURL(selectedThumbnail);
+};
+
+const fetchCategories = async () => {
+  try {
+    const categories = await $client.category.getAll.query();
+    state.categories = categories as any[];
+  } catch (err: any) {
+    ElNotification({
+      title: "Error",
+      message: err.message,
+      type: "error",
+    });
+  }
 };
 
 const submit = async (formInstance: FormInstance | undefined) => {
@@ -252,6 +292,7 @@ const submit = async (formInstance: FormInstance | undefined) => {
         type: form.type,
         isPublished: form.isPublished,
         thumbnail: thumbnailBase64,
+        categoryId: Number(form.categoryId),
       });
 
       ElNotification({
@@ -272,6 +313,10 @@ const submit = async (formInstance: FormInstance | undefined) => {
     }
   }
 };
+
+onMounted(() => {
+  fetchCategories();
+});
 </script>
 
 <style scoped>

@@ -4,13 +4,7 @@
     style="color: white; font-weight: 500"
   >
     <ElAlert :closable="false" type="warning" effect="dark">
-      <p>
-        {{
-          data?._count.eventTickets === 0
-            ? "Event ini belum mempunyai tiket, silahkan atur tiket di sini"
-            : "Anda dapat mengatur tiket di sini"
-        }}
-      </p>
+      <p>Anda dapat mengatur tiket di sini</p>
     </ElAlert></NuxtLink
   >
   <ElCard style="margin-top: 16px">

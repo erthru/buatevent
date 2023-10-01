@@ -57,6 +57,16 @@ model Organizer {
     events    Event[]
 }
 
+model Category {
+    id        Int       @id @default(autoincrement())
+    name      String    @unique
+    slug      String    @unique
+    thumbnail String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+    events    Event[]
+}
+
 model Event {
     id           Int           @id @default(autoincrement())
     title        String
@@ -69,6 +79,8 @@ model Event {
     isPublished  Boolean
     createdAt    DateTime      @default(now())
     updatedAt    DateTime?     @updatedAt
+    categoryId   Int
+    category     Category      @relation(fields: [categoryId], references: [id])
     organizerId  Int
     organizer    Organizer     @relation(fields: [organizerId], references: [id])
     eventTickets EventTicket[]

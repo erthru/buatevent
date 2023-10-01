@@ -3,11 +3,63 @@ import bcrypt from "bcrypt";
 
 const db = new PrismaClient();
 
+const categories = [
+  {
+    name: "Olahraga",
+    image: "category-sport.jpg",
+  },
+  {
+    name: "Konferensi",
+    image: "category-conference.jpeg",
+  },
+  {
+    name: "Pameran",
+    image: "category-expo.jpeg",
+  },
+  {
+    name: "Musik",
+    image: "category-music.jpeg",
+  },
+  {
+    name: "Festival",
+    image: "category-festival.jpeg",
+  },
+  {
+    name: "Seni Pertunjukan",
+    image: "category-performing-art.jpeg",
+  },
+  {
+    name: "Komunitas",
+    image: "category-community.jpeg",
+  },
+  {
+    name: "Akademi",
+    image: "category-academy.jpeg",
+  },
+  {
+    name: "Politik",
+    image: "category-politic.jpeg",
+  },
+  {
+    name: "Bisnis",
+    image: "category-business.jpeg",
+  },
+  {
+    name: "Makanan & Minuman",
+    image: "category-food-and-drink.jpeg",
+  },
+  {
+    name: "Lainnya",
+    image: "category-other.jpeg",
+  },
+];
+
 const main = async () => {
   try {
     await db.eventMember.deleteMany();
     await db.eventTicket.deleteMany();
     await db.event.deleteMany();
+    await db.category.deleteMany();
     await db.admin.deleteMany();
     await db.organizer.deleteMany();
     await db.user.deleteMany();
@@ -49,6 +101,19 @@ const main = async () => {
         },
       }),
     ]);
+
+    for (const category of categories) {
+      await db.category.create({
+        data: {
+          name: category.name,
+          thumbnail: category.image,
+          slug: `${category.name
+            .toLowerCase()
+            .replace(/\s+/g, "-")
+            .replace(/[^a-z0-9-]/g, "")}-${new Date().getTime()}`,
+        },
+      });
+    }
   } catch (err: any) {
     console.error(err);
   }

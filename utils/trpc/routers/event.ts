@@ -174,12 +174,21 @@ export const eventRouter = router({
         endAt: z.string(),
         type: z.enum(["ONLINE", "OFFLINE", "BOTH"]),
         isPublished: z.boolean(),
+        categoryId: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { title, thumbnail, body, startAt, endAt, type, isPublished } =
-          input;
+        const {
+          title,
+          thumbnail,
+          body,
+          startAt,
+          endAt,
+          type,
+          isPublished,
+          categoryId,
+        } = input;
 
         const { db, id } = ctx;
 
@@ -199,6 +208,7 @@ export const eventRouter = router({
             endAt,
             type,
             isPublished,
+            categoryId,
             organizerId: organizer?.id!!,
           },
         });
@@ -225,6 +235,16 @@ export const eventRouter = router({
           });
         }
 
+        await db.eventTicket.create({
+          data: {
+            name: "Free",
+            description: "Initial free tickets for the first 100 members",
+            price: 0,
+            quota: 100,
+            eventId: event.id,
+          },
+        });
+
         return event;
       } catch (err: any) {
         throw new TRPCError({
@@ -245,6 +265,7 @@ export const eventRouter = router({
         endAt: z.string(),
         type: z.enum(["ONLINE", "OFFLINE", "BOTH"]),
         isPublished: z.boolean(),
+        categoryId: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -258,6 +279,7 @@ export const eventRouter = router({
           endAt,
           type,
           isPublished,
+          categoryId,
         } = input;
 
         const { db, id: userId } = ctx;
@@ -290,6 +312,7 @@ export const eventRouter = router({
             endAt,
             type,
             isPublished,
+            categoryId,
           },
           where: {
             id,
