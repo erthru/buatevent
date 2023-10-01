@@ -1,13 +1,9 @@
 <template>
-  <NuxtLayout
-    :name="data?.component === 'PageIndexUsername' ? 'independent' : 'default'"
-  >
-    <PageIndexDefault v-if="data?.component === 'PageIndexDefault'" />
-    <PageIndexUsername
-      v-if="data?.component === 'PageIndexUsername'"
-      :events="data.events"
-    />
-  </NuxtLayout>
+  <PageIndexDefault v-if="data?.component === 'PageIndexDefault'" />
+  <PageIndexUsername
+    v-if="data?.component === 'PageIndexUsername'"
+    :events="data.events"
+  />
 </template>
 
 <script setup lang="ts">
@@ -31,6 +27,7 @@ const { data } = useLazyAsyncData("index", async () => {
       : window.location.host;
 
     let component = "PageIndexDefault";
+    let layout = "default";
 
     let events = [] as Prisma.EventGetPayload<{
       include: {
@@ -40,6 +37,7 @@ const { data } = useLazyAsyncData("index", async () => {
 
     if (host !== currentHost) {
       component = "PageIndexUsername";
+      layout = "independent";
       let username = currentHost?.split(".")[0];
 
       const currentHostWithoutUsername = currentHost
@@ -62,10 +60,17 @@ const { data } = useLazyAsyncData("index", async () => {
 
     return {
       component,
+      layout,
       events,
     };
   } catch (err: any) {
     setError(err?.data?.httpStatus || 500, err.message);
+  }
+});
+
+onMounted(() => {
+  if (data.value?.layout !== "default") {
+    setPageLayout(data.value?.layout as any);
   }
 });
 </script>

@@ -191,8 +191,8 @@ const sidebarItems = computed(() => {
     },
     {
       title: "Bantuan",
-      to: "/dashboard/help",
-      isActive: route.path.includes("/dashboard/help"),
+      to: "/help",
+      isActive: false,
       icon: Service,
       isShown: true,
       onClick: () => {

@@ -4,10 +4,9 @@
       display: flex;
       flex-direction: column;
       width: 100%;
-      padding-top: 52px;
+      padding-top: 32px;
     "
   >
-    <p style="margin: 0 auto; font-size: 28px; font-weight: 600">LOGO HERE</p>
     <ElCard class="card">
       <p style="font-size: 28px; font-weight: 600">Login</p>
       <FormLogin style="margin-top: 16px" />
@@ -34,7 +33,7 @@ definePageMeta({
 <style scoped>
 .card {
   width: 100%;
-  margin: 38px auto 0px;
+  margin: 0 auto;
 }
 
 @media (min-width: 768px) {

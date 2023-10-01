@@ -1,8 +1,3 @@
 <template>
-  <div>
-    <p>page index default</p>
-    <NuxtLink to="/login">
-      <ElButton>Login</ElButton>
-    </NuxtLink>
-  </div>
+  <div style="height: 4000px; width: 100%;">conntent</div>
 </template>
