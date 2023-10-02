@@ -1,7 +1,11 @@
 export const useCustomError = () => {
   const error = useError();
   const isError = useState("isError", () => false);
-  const errorCode = useState("errorCode", () => 500);
+
+  const errorCode = useState(
+    "errorCode",
+    () => (error.value as any)?.statusCode
+  );
   const errorMessage = useState("errorMessage", () => error.value?.message);
 
   const setError = (code: number, message: string) => {

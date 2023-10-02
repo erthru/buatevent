@@ -69,7 +69,10 @@ export const eventRouter = router({
         return event;
       } catch (err: any) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code:
+            err.message === "unauthorized"
+              ? "UNAUTHORIZED"
+              : "INTERNAL_SERVER_ERROR",
           message: err.message,
         });
       }
@@ -353,7 +356,10 @@ export const eventRouter = router({
         return event;
       } catch (err: any) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code:
+            err.message === "unauthorized"
+              ? "UNAUTHORIZED"
+              : "INTERNAL_SERVER_ERROR",
           message: err.message,
         });
       }
@@ -412,7 +418,12 @@ export const eventRouter = router({
         });
       } catch (err: any) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code:
+            err.message === "unauthorized"
+              ? "UNAUTHORIZED"
+              : err.message.includes("cannot delete")
+              ? "FORBIDDEN"
+              : "INTERNAL_SERVER_ERROR",
           message: err.message,
         });
       }
