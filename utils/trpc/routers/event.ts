@@ -247,16 +247,6 @@ export const eventRouter = router({
           });
         }
 
-        await db.eventTicket.create({
-          data: {
-            name: "Free",
-            description: "Initial free tickets for the first 100 members",
-            price: 0,
-            quota: 100,
-            eventId: event.id,
-          },
-        });
-
         return event;
       } catch (err: any) {
         throw new TRPCError({

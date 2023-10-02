@@ -301,7 +301,7 @@ const submit = async (formInstance: FormInstance | undefined) => {
         type: "success",
       });
 
-      router.push(`/dashboard/events`);
+      router.push(`/dashboard/events/${event.id}/tickets`);
     } catch (err: any) {
       ElNotification({
         title: "Error",

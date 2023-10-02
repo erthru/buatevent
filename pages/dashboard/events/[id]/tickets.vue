@@ -1,6 +1,13 @@
 <template>
-  <ElCard>
-    <p>tiket</p>
+  <ElAlert
+    v-if="!isLoading && data?.length === 0"
+    type="warning"
+    :closable="false"
+    effect="dark"
+    >Halaman event tidak akan tampil jika tiket belum ditambahkan</ElAlert
+  >
+  <ElCard v-loading="isLoading" style="margin-top: 16px">
+    <pre>{{ data }}</pre>
   </ElCard>
 </template>
 
@@ -48,8 +55,8 @@ const { data, pending: isLoading } = useLazyAsyncData(
         },
       ]);
 
-      return await $client.event.getById.query({
-        id: Number(route.params.id),
+      return await $client.eventTicket.getAllByEventId.query({
+        eventId: Number(route.params.id),
       });
     } catch (err: any) {
       setError(err?.data?.httpStatus || 500, err.message);
