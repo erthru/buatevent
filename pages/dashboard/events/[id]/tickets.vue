@@ -1,24 +1,20 @@
 <template>
   <ElCard>
-    <FormUpdateEvent
-      :key="state.formKey"
-      v-loading="isLoading"
-      :event="(data as any)"
-    />
+    <p>tiket</p>
   </ElCard>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
-const { user, fetchUser } = useUser();
-const router = useRouter();
 const route = useRoute();
+const { user } = useUser();
 const { setError } = useCustomError();
 const { $client } = useNuxtApp();
+const router = useRouter();
 
 useHead({
-  title: `Perbarui Event | ${prc.appTitle}`,
+  title: `Kelola Tiket Event | ${prc.appTitle}`,
 });
 
 definePageMeta({
@@ -26,24 +22,16 @@ definePageMeta({
   layout: "dashboard",
 });
 
-const state = reactive({
-  formKey: `${new Date().getTime()}-fk`,
-});
-
 const { data, pending: isLoading } = useLazyAsyncData(
-  "dashboardEventsId",
+  "dashboardEventsIdTickets",
   async () => {
     try {
-      if (!user.value) {
-        await fetchUser();
-      }
-
       if (user.value?.role !== "ORGANIZER") {
         router.push("/dashboard");
         return;
       }
 
-      menu.setTitle("Perbarui Event");
+      menu.setTitle("Kelola Tiket Event");
 
       menu.setBreadcrumbs([
         {
@@ -55,8 +43,8 @@ const { data, pending: isLoading } = useLazyAsyncData(
           to: "/dashboard/events",
         },
         {
-          title: "Perbarui Event",
-          to: `/dashbaord/events/${route.params.id}`,
+          title: "Kelola Tiket Event",
+          to: `/dashbaord/events/${route.params.id}/tickets`,
         },
       ]);
 
@@ -64,23 +52,8 @@ const { data, pending: isLoading } = useLazyAsyncData(
         id: Number(route.params.id),
       });
     } catch (err: any) {
-      if (process.server) {
-        setError(err?.data?.httpStatus || 500, err.message);
-      } else {
-        ElNotification({
-          title: "Error",
-          message: err.message,
-          type: "error",
-        });
-      }
+      setError(err?.data?.httpStatus || 500, err.message);
     }
-  }
-);
-
-watch(
-  () => data.value,
-  () => {
-    state.formKey = `${new Date().getTime()}-fk`;
   }
 );
 </script>

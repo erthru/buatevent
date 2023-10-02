@@ -128,7 +128,7 @@ const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
 const { $client } = useNuxtApp();
 const router = useRouter();
-const { user, fetchUser } = useUser();
+const { user } = useUser();
 const { setError } = useCustomError();
 
 useHead({
@@ -150,10 +150,6 @@ const { data, pending: isLoading } = useLazyAsyncData(
   "dashboardEvents",
   async () => {
     try {
-      if (!user.value) {
-        await fetchUser();
-      }
-
       if (user.value?.role !== "ORGANIZER") {
         router.push("/dashboard");
         return;

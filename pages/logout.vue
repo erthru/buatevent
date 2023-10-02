@@ -8,6 +8,10 @@ useAsyncData("logout", async () => {
   tokenToken.value = "";
 });
 
+definePageMeta({
+  layout: "independent",
+});
+
 onMounted(() => {
   location.href = "/";
 });

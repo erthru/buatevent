@@ -7,7 +7,7 @@
 <script setup lang="ts">
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
-const { user, fetchUser } = useUser();
+const { user } = useUser();
 const router = useRouter();
 const { setError } = useCustomError();
 
@@ -22,10 +22,6 @@ definePageMeta({
 
 useLazyAsyncData("dashboardEventsAdd", async () => {
   try {
-    if (!user.value) {
-      await fetchUser();
-    }
-
     if (user.value?.role !== "ORGANIZER") {
       router.push("/dashboard");
       return;

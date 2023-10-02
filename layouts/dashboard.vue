@@ -15,16 +15,6 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-const { user, fetchUser } = useUser();
-
-onMounted(() => {
-  if (!user.value) {
-    fetchUser();
-  }
-});
-</script>
-
 <style scoped>
 main .wrapper {
   padding: 0 16px 16px 16px;

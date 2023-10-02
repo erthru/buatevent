@@ -46,7 +46,6 @@ import { FormInstance, ElNotification } from "element-plus";
 
 const formRef = ref<FormInstance>();
 const { $client } = useNuxtApp();
-const { fetchUser } = useUser();
 
 type Form = {
   email: string;
