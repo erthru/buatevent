@@ -32,7 +32,11 @@
           margin-top: 16px;
         "
       >
-        {{ errorMessage }}
+        {{
+          errorMessage === "token invalid"
+            ? "Sesi telah berakhir"
+            : errorMessage
+        }}
       </p>
       <p
         style="
