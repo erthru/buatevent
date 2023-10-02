@@ -53,7 +53,13 @@
               }`,
             }"
           >
-            <NuxtLink :to="item.to" @click="item.onClick">
+            <component
+              :is="item.isExternal ? 'a' : nuxtLink"
+              :to="!item.isExternal ? item.to : undefined"
+              :href="item.isExternal ? item.to : undefined"
+              :target="item.isExternal ? '_blank' : undefined"
+              @click="item.onClick"
+            >
               <div
                 style="
                   padding: 12px 18px;
@@ -89,7 +95,7 @@
                   {{ item.title }}
                 </p>
               </div>
-            </NuxtLink>
+            </component>
           </li>
         </template>
       </ul>
@@ -165,6 +171,7 @@ const tokenCookie = useCookie("token");
 const breakpoint = useBreakpoint();
 const menu = useMenu();
 const { user } = useUser();
+const nuxtLink = resolveComponent("NuxtLink");
 
 const sidebarItems = computed(() => {
   return [
@@ -174,6 +181,7 @@ const sidebarItems = computed(() => {
       isActive: route.path === "/dashboard",
       icon: House,
       isShown: true,
+      isExternal: false,
       onClick: () => {
         onItemClick();
       },
@@ -184,6 +192,7 @@ const sidebarItems = computed(() => {
       isActive: route.path.includes("/dashboard/events"),
       icon: Calendar,
       isShown: user.value?.role === "ORGANIZER",
+      isExternal: false,
       onClick: () => {
         onItemClick();
       },
@@ -194,6 +203,7 @@ const sidebarItems = computed(() => {
       isActive: route.path.includes("/dashboard/setting"),
       icon: Setting,
       isShown: true,
+      isExternal: false,
       onClick: () => {
         onItemClick();
       },
@@ -204,6 +214,7 @@ const sidebarItems = computed(() => {
       isActive: false,
       icon: Service,
       isShown: true,
+      isExternal: true,
       onClick: () => {
         onItemClick();
       },
@@ -214,6 +225,7 @@ const sidebarItems = computed(() => {
       isActive: false,
       icon: SwitchButton,
       isShown: true,
+      isExternal: false,
       onClick: () => {
         location.href = "/logout";
       },
