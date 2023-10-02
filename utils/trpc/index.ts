@@ -26,8 +26,6 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
       },
     });
   } catch (err: any) {
-    deleteCookie(ctx.event, "token");
-    
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "token invalid",

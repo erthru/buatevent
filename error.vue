@@ -34,10 +34,21 @@
       >
         {{ errorMessage }}
       </p>
-      <p style="text-align: center">
-        <a :href="prc.baseUrl" style="font-size: 14px"
-          >Kembali ke halaman utama</a
-        >
+      <p
+        style="
+          font-size: 14px;
+          color: var(--el-color-primary);
+          font-weight: 500;
+          cursor: pointer;
+          text-align: center;
+        "
+        @click="redirect"
+      >
+        {{
+          errorMessage === "token invalid"
+            ? "Logout"
+            : "Kembali ke halaman utama"
+        }}
       </p>
     </ElCard>
   </div>
@@ -45,7 +56,10 @@
 
 <script lang="ts" setup>
 const { errorCode, errorMessage } = useCustomError();
-const { public: prc } = useRuntimeConfig();
+
+const redirect = async () => {
+  location.href = errorMessage.value === "token invalid" ? "/logout" : "/";
+};
 </script>
 
 <style scoped>

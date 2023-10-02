@@ -4,9 +4,13 @@ export const useCustomError = () => {
 
   const errorCode = useState(
     "errorCode",
-    () => (error.value as any)?.statusCode
+    () => (error.value as any)?.statusCode || 500
   );
-  const errorMessage = useState("errorMessage", () => error.value?.message);
+
+  const errorMessage = useState(
+    "errorMessage",
+    () => error.value?.message || ""
+  );
 
   const setError = (code: number, message: string) => {
     isError.value = true;

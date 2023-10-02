@@ -215,9 +215,7 @@ const sidebarItems = computed(() => {
       icon: SwitchButton,
       isShown: true,
       onClick: () => {
-        onItemClick();
-        tokenCookie.value = "";
-        navigateTo("/");
+        location.href = "/logout";
       },
     },
   ];

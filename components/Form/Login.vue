@@ -32,7 +32,7 @@
     </ElFormItem>
     <NuxtLink
       to="/forgot-password"
-      style="margin: -14px 0 10px auto; font-size: 14px; font-weight: 500;"
+      style="margin: -14px 0 10px auto; font-size: 14px; font-weight: 500"
       >Lupa Password?</NuxtLink
     >
     <ElButton type="primary" @click="submit(formRef)" style="width: max-content"
@@ -46,6 +46,7 @@ import { FormInstance, ElNotification } from "element-plus";
 
 const formRef = ref<FormInstance>();
 const { $client } = useNuxtApp();
+const { fetchUser } = useUser();
 
 type Form = {
   email: string;
