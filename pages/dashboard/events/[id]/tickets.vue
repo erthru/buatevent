@@ -7,11 +7,95 @@
     >Halaman event tidak akan tampil jika tiket belum ditambahkan</ElAlert
   >
   <ElCard v-loading="isLoading" style="margin-top: 16px">
-    <pre>{{ data }}</pre>
+    <div
+      class="action"
+      style="display: flex; width: 100%; row-gap: 16px; align-items: center"
+    >
+      <ElButton type="primary" style="width: max-content" @click="showAddModal"
+        >Tambah</ElButton
+      >
+      <ElInput
+        v-model="state.search"
+        placeholder="Cari ..."
+        class="search"
+        style="width: max-content"
+      />
+    </div>
+    <ElTable
+      :data="eventTickets.data"
+      stripe
+      v-loading="isLoading"
+      style="margin-top: 16px"
+    >
+      <ElTableColumn label="No" width="50">
+        <template #default="{ $index }">
+          <span>{{ $index + 1 + (state.page - 1) * state.pageSize }}</span>
+        </template>
+      </ElTableColumn>
+      <ElTableColumn prop="name" label="Nama" />
+      <ElTableColumn prop="description" label="Deskripsi" />
+      <ElTableColumn prop="price" label="Harga" width="150">
+        <template #default="{ row }">
+          <p>Rp {{ row.price.toLocaleString("id") }}</p>
+        </template>
+      </ElTableColumn>
+      <ElTableColumn prop="quota" label="Kuota" width="100" />
+      <ElTableColumn label="Aksi" width="210">
+        <template #default="{ row }">
+          <div style="display: flex; gap: 12px">
+            <ElButton type="warning" @click="showUpdateModal(row)"
+              >Perbarui</ElButton
+            >
+            <ElButton type="danger" @click="showDeleteModal(row)"
+              >Hapus</ElButton
+            >
+          </div>
+        </template>
+      </ElTableColumn>
+    </ElTable>
+    <ElPagination
+      class="pagination"
+      layout="prev, pager, next, total"
+      style="margin-top: 16px; width: max-content"
+      :pager-count="3"
+      :total="eventTickets.total"
+      :page-size="state.pageSize"
+      :default-current-page="state.page"
+      @current-change="(val) => (state.page = val)"
+    />
   </ElCard>
+  <ClientOnly>
+    <ElDialog
+      v-model="state.isDeleteModalShown"
+      title="Hapus Tiket"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <p>Apakah anda yakin dengan keputusan ini?</p>
+      <template #footer>
+        <div>
+          <ElButton
+            v-if="!state.isDeleting"
+            @click="state.isDeleteModalShown = false"
+            >Tutup</ElButton
+          >
+          <ElButton
+            type="primary"
+            @click="_delete"
+            :disabled="state.isDeleting"
+            v-loading="state.isDeleting"
+            >Hapus</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+  </ClientOnly>
 </template>
 
 <script lang="ts" setup>
+import { Prisma } from "@prisma/client";
+
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
 const route = useRoute();
@@ -29,38 +113,139 @@ definePageMeta({
   layout: "dashboard",
 });
 
-const { data, pending: isLoading } = useLazyAsyncData(
-  "dashboardEventsIdTickets",
-  async () => {
-    try {
-      if (user.value?.role !== "ORGANIZER") {
-        router.push("/dashboard");
-        return;
-      }
+const state = reactive({
+  search: "",
+  page: 1,
+  pageSize: 15,
+  isAddModalShown: false,
+  isUpdateModalShown: false,
+  isDeleteModalShown: false,
+  selectedEventTicket: null as Prisma.EventTicketGetPayload<{}> | null,
+  isDeleting: false,
+  isAdding: false,
+  isUpdating: false,
+});
 
-      menu.setTitle("Kelola Tiket Event");
-
-      menu.setBreadcrumbs([
-        {
-          title: "Dashboard",
-          to: "/dashboard",
-        },
-        {
-          title: "Event",
-          to: "/dashboard/events",
-        },
-        {
-          title: "Kelola Tiket Event",
-          to: `/dashbaord/events/${route.params.id}/tickets`,
-        },
-      ]);
-
-      return await $client.eventTicket.getAllByEventId.query({
-        eventId: Number(route.params.id),
-      });
-    } catch (err: any) {
-      setError(err?.data?.httpStatus || 500, err.message);
+const {
+  data,
+  pending: isLoading,
+  refresh,
+} = useLazyAsyncData("dashboardEventsIdTickets", async () => {
+  try {
+    if (user.value?.role !== "ORGANIZER") {
+      router.push("/dashboard");
+      return;
     }
+
+    menu.setTitle("Kelola Tiket Event");
+
+    menu.setBreadcrumbs([
+      {
+        title: "Dashboard",
+        to: "/dashboard",
+      },
+      {
+        title: "Event",
+        to: "/dashboard/events",
+      },
+      {
+        title: "Kelola Tiket Event",
+        to: `/dashbaord/events/${route.params.id}/tickets`,
+      },
+    ]);
+
+    return await $client.eventTicket.getAllByEventId.query({
+      eventId: Number(route.params.id),
+    });
+  } catch (err: any) {
+    setError(err?.data?.httpStatus || 500, err.message);
   }
-);
+});
+
+const showAddModal = () => {
+  state.selectedEventTicket = null;
+  state.isAddModalShown = true;
+};
+
+const showUpdateModal = (eventTicket: Prisma.EventTicketGetPayload<{}>) => {
+  state.selectedEventTicket = eventTicket;
+  state.isUpdateModalShown = true;
+};
+
+const showDeleteModal = (eventTicket: Prisma.EventTicketGetPayload<{}>) => {
+  state.selectedEventTicket = eventTicket;
+  state.isDeleteModalShown = true;
+};
+
+const _delete = async () => {
+  try {
+    state.isDeleting = true;
+
+    await $client.eventTicket.delete.mutate({
+      id: state.selectedEventTicket?.id!!,
+    });
+
+    ElNotification({
+      title: "Sukses",
+      message: "Tiket berhasil dihapus",
+      type: "success",
+    });
+
+    refresh();
+  } catch (err: any) {
+    ElNotification({
+      title: "Error",
+      message: err.message,
+      type: "error",
+    });
+  } finally {
+    state.isDeleting = false;
+  }
+};
+
+const eventTickets = computed(() => {
+  const filteredEventTickets =
+    data.value?.filter((eventTicket) =>
+      eventTicket.name.toLowerCase().includes(state.search.toLowerCase())
+    ) || [];
+
+  const startIndex = (state.page - 1) * state.pageSize;
+  const endIndex = startIndex + state.pageSize;
+
+  return {
+    data: filteredEventTickets.slice(startIndex, endIndex),
+    total: filteredEventTickets.length,
+  };
+});
 </script>
+
+<style scoped>
+.action {
+  flex-direction: column;
+}
+
+.action .search {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pagination {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 768px) {
+  .action {
+    flex-direction: row;
+  }
+
+  .action .search {
+    margin-right: 0;
+  }
+
+  .pagination {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+</style>
