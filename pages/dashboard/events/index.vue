@@ -69,7 +69,7 @@
           <p>{{ row.isPublished ? "Dipublikasi" : "Draft" }}</p>
         </template>
       </ElTableColumn>
-      <ElTableColumn label="Aksi" width="238">
+      <ElTableColumn label="Aksi" width="210">
         <template #default="{ row }">
           <div style="display: flex; gap: 12px">
             <a
@@ -78,11 +78,34 @@
             >
               <ElButton type="success">Lihat Halaman</ElButton>
             </a>
-            <ElButton
-              type="warning"
-              @click="router.push(`/dashboard/events/${row.id}`)"
-              >Perbarui</ElButton
-            >
+            <ElDropdown trigger="click">
+              <ElButton type="warning">Aksi</ElButton>
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem>
+                    <NuxtLink
+                      :to="`/dashboard/events/${row.id}`"
+                      style="color: inherit"
+                      >Perbarui</NuxtLink
+                    >
+                  </ElDropdownItem>
+                  <ElDropdownItem>
+                    <NuxtLink
+                      :to="`/dashboard/events/${row.id}/tickets`"
+                      style="color: inherit"
+                      >Kelola Tiket</NuxtLink
+                    >
+                  </ElDropdownItem>
+                  <ElDropdownItem>
+                    <NuxtLink
+                      :to="`/dashboard/events/${row.id}/members`"
+                      style="color: inherit"
+                      >Lihat Anggota</NuxtLink
+                    >
+                  </ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
           </div>
         </template>
       </ElTableColumn>

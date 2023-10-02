@@ -389,7 +389,7 @@ const submit = async (formInstance: FormInstance | undefined) => {
         type: "success",
       });
 
-      emit("updated");
+      router.push(`/dashboard/events`);
     } catch (err: any) {
       ElNotification({
         title: "Error",
