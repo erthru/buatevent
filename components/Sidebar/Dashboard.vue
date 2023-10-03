@@ -53,13 +53,7 @@
               }`,
             }"
           >
-            <component
-              :is="item.isExternal ? 'a' : nuxtLink"
-              :to="!item.isExternal ? item.to : undefined"
-              :href="item.isExternal ? item.to : undefined"
-              :target="item.isExternal ? '_blank' : undefined"
-              @click="item.onClick"
-            >
+            <NuxtLink :to="item.to" @click="item.onClick">
               <div
                 style="
                   padding: 12px 18px;
@@ -95,7 +89,7 @@
                   {{ item.title }}
                 </p>
               </div>
-            </component>
+            </NuxtLink>
           </li>
         </template>
       </ul>
@@ -153,6 +147,32 @@
       "
       @click="menu.closeSidebar()"
     />
+    <ClientOnly>
+      <ElDialog
+        v-model="state.isContactModalShown"
+        title="Kontak"
+        :show-close="false"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :width="breakpoint === 'sm' ? '90%' : '460px'"
+      >
+        <div style="display: flex; align-items: center">
+          <ElIcon style="font-size: 18px">
+            <Phone />
+          </ElIcon>
+          <p style="margin-left: 8px">(+62)812 3456 7890</p>
+        </div>
+        <div style="display: flex; align-items: center; margin-top: 6px">
+          <ElIcon style="font-size: 18px">
+            <Message />
+          </ElIcon>
+          <p style="margin-left: 8px">contact@buatevent.com</p>
+        </div>
+        <template #footer>
+          <ElButton @click="state.isContactModalShown = false">Tutup</ElButton>
+        </template>
+      </ElDialog>
+    </ClientOnly>
   </div>
 </template>
 
@@ -164,14 +184,18 @@ import {
   Setting,
   SwitchButton,
   Plus,
+  Phone,
+  Message,
 } from "@element-plus/icons-vue";
 
 const route = useRoute();
-const tokenCookie = useCookie("token");
 const breakpoint = useBreakpoint();
 const menu = useMenu();
 const { user } = useUser();
-const nuxtLink = resolveComponent("NuxtLink");
+
+const state = reactive({
+  isContactModalShown: false,
+});
 
 const sidebarItems = computed(() => {
   return [
@@ -181,7 +205,6 @@ const sidebarItems = computed(() => {
       isActive: route.path === "/dashboard",
       icon: House,
       isShown: true,
-      isExternal: false,
       onClick: () => {
         onItemClick();
       },
@@ -192,7 +215,6 @@ const sidebarItems = computed(() => {
       isActive: route.path.includes("/dashboard/events"),
       icon: Calendar,
       isShown: user.value?.role === "ORGANIZER",
-      isExternal: false,
       onClick: () => {
         onItemClick();
       },
@@ -203,20 +225,19 @@ const sidebarItems = computed(() => {
       isActive: route.path.includes("/dashboard/setting"),
       icon: Setting,
       isShown: true,
-      isExternal: false,
       onClick: () => {
         onItemClick();
       },
     },
     {
       title: "Kontak",
-      to: "#",
+      to: "#contact",
       isActive: false,
       icon: Service,
       isShown: true,
-      isExternal: true,
       onClick: () => {
         onItemClick();
+        state.isContactModalShown = true;
       },
     },
     {
@@ -225,7 +246,6 @@ const sidebarItems = computed(() => {
       isActive: false,
       icon: SwitchButton,
       isShown: true,
-      isExternal: false,
       onClick: () => {
         location.href = "/logout";
       },

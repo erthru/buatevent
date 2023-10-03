@@ -58,7 +58,7 @@
           style="font-weight: 500; color: #303133"
           >Buat Event</NuxtLink
         >
-        <NuxtLink to="/#contact" style="font-weight: 500; color: #303133"
+        <NuxtLink to="#contact" style="font-weight: 500; color: #303133"
           >Kontak</NuxtLink
         >
         <NuxtLink to="/login" style="font-weight: 500; color: #303133"
@@ -83,7 +83,7 @@
         style="font-weight: 500; color: #303133"
         >Buat Event</NuxtLink
       >
-      <NuxtLink to="/#contact" style="font-weight: 500; color: #303133"
+      <NuxtLink to="#contact" style="font-weight: 500; color: #303133"
         >Kontak</NuxtLink
       >
       <NuxtLink to="/login" style="font-weight: 500; color: #303133"

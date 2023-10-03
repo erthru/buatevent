@@ -35,22 +35,30 @@
             margin-top: 21px;
           "
         >
-          <NuxtLink style="font-size: 14px; color: white; font-weight: 500"
+          <NuxtLink
+            to="/dashboard/events/add"
+            style="font-size: 14px; color: white; font-weight: 500"
             >Buat Event</NuxtLink
           >
-          <NuxtLink style="font-size: 14px; color: white; font-weight: 500"
+          <NuxtLink
+            to="#contact"
+            style="font-size: 14px; color: white; font-weight: 500"
             >Kontak</NuxtLink
           >
-          <NuxtLink style="font-size: 14px; color: white; font-weight: 500"
+          <NuxtLink
+            to="/login"
+            style="font-size: 14px; color: white; font-weight: 500"
             >Login</NuxtLink
           >
-          <NuxtLink style="font-size: 14px; color: white; font-weight: 500"
+          <NuxtLink
+            to="/register"
+            style="font-size: 14px; color: white; font-weight: 500"
             >Daftar</NuxtLink
           >
         </div>
       </div>
       <div
-        id="#contact"
+        id="contact"
         style="
           width: 100%;
           font-size: 14px;
@@ -66,7 +74,7 @@
           <ElIcon style="font-size: 18px">
             <Phone />
           </ElIcon>
-          <p style="margin-left: 4px">(+62)812 3456 7890</p>
+          <p style="margin-left: 8px">(+62)812 3456 7890</p>
         </div>
         <div
           class="contact-item"
@@ -75,7 +83,7 @@
           <ElIcon style="font-size: 18px">
             <Message />
           </ElIcon>
-          <p style="margin-left: 4px">contact@buatevent.com</p>
+          <p style="margin-left: 8px">contact@buatevent.com</p>
         </div>
       </div>
     </div>
