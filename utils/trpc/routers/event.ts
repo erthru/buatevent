@@ -106,13 +106,20 @@ export const eventRouter = router({
           include: {
             category: true,
             organizer: true,
+            _count: {
+              select: {
+                eventTickets: true,
+              },
+            },
           },
           where: {
             organizerId: organizer?.id,
           },
         });
 
-        return events;
+        return events.filter(
+          (event) => event.isPublished === true && event._count.eventTickets > 0
+        );
       } catch (err: any) {
         throw new TRPCError({
           code:
@@ -159,7 +166,7 @@ export const eventRouter = router({
           },
         });
 
-        if (!event?.isPublished) {
+        if (!event?.isPublished || event.eventTickets.length === 0) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "not found",

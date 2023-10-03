@@ -52,11 +52,11 @@
         trigger: 'blur',
       }"
     >
-      <ElInput
-        v-model="form.quota"
-        type="number"
-        placeholder="Masukkan kuota"
-      />
+      <ElInput v-model="form.quota" type="number" placeholder="Masukkan kuota">
+        <template #append>
+          <p>Orang</p>
+        </template>
+      </ElInput>
     </ElFormItem>
   </ElForm>
 </template>

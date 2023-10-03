@@ -32,7 +32,7 @@
           <span>{{ $index + 1 + (state.page - 1) * state.pageSize }}</span>
         </template>
       </ElTableColumn>
-      <ElTableColumn prop="name" label="Nama" />
+      <ElTableColumn prop="name" label="Nama" width="200" />
       <ElTableColumn prop="description" label="Deskripsi" />
       <ElTableColumn prop="price" label="Harga" width="150">
         <template #default="{ row }">
@@ -42,7 +42,7 @@
       <ElTableColumn prop="quota" label="Kuota" width="100" />
       <ElTableColumn label="Aksi" width="210">
         <template #default="{ row }">
-          <div style="display: flex; gap: 12px">
+          <div style="display: flex;">
             <ElButton type="warning" @click="showUpdateModal(row)"
               >Perbarui</ElButton
             >
@@ -74,6 +74,7 @@
       :width="breakpoint === 'sm' ? '90%' : '460px'"
     >
       <FormAddEventTicket
+        :key="state.addFormKey"
         ref="formAddEventTicket"
         style="margin-top: -16px; margin-bottom: -16px"
         @update:loading="(loading) => (state.isAdding = loading)"
@@ -158,6 +159,8 @@ const state = reactive({
   isDeleting: false,
   isAdding: false,
   isUpdating: false,
+  addFormKey: `${new Date().getTime()}-afk`,
+  updateFormKey: `${new Date().getTime()}-ufk`,
 });
 
 const {
@@ -197,11 +200,13 @@ const {
 });
 
 const showAddModal = () => {
+  state.addFormKey = `${new Date().getTime()}-afk`;
   state.selectedEventTicket = null;
   state.isAddModalShown = true;
 };
 
 const showUpdateModal = (eventTicket: Prisma.EventTicketGetPayload<{}>) => {
+  state.updateFormKey = `${new Date().getTime()}-ufk`;
   state.selectedEventTicket = eventTicket;
   state.isUpdateModalShown = true;
 };
