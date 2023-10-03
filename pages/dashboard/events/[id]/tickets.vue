@@ -42,7 +42,7 @@
       <ElTableColumn prop="quota" label="Kuota" width="100" />
       <ElTableColumn label="Aksi" width="210">
         <template #default="{ row }">
-          <div style="display: flex;">
+          <div style="display: flex">
             <ElButton type="warning" @click="showUpdateModal(row)"
               >Perbarui</ElButton
             >
@@ -97,6 +97,38 @@
       </template>
     </ElDialog>
     <ElDialog
+      v-model="state.isUpdateModalShown"
+      title="Perbarui Tiket"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :width="breakpoint === 'sm' ? '90%' : '460px'"
+    >
+      <FormUpdateEventTIcket
+        :key="state.updateFormKey"
+        ref="formUpdateEventTicket"
+        style="margin-top: -16px; margin-bottom: -16px"
+        :event-ticket="state.selectedEventTicket"
+        @update:loading="(loading) => (state.isUpdating = loading)"
+        @updated="onUpdated"
+      />
+      <template #footer>
+        <div>
+          <ElButton
+            v-if="!state.isUpdating"
+            @click="state.isUpdateModalShown = false"
+            >Tutup</ElButton
+          >
+          <ElButton
+            v-if="!state.isUpdating"
+            type="primary"
+            @click="formUpdateEventTicket?.submit"
+            >Simpan</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+    <ElDialog
       v-model="state.isDeleteModalShown"
       title="Hapus Tiket"
       :show-close="false"
@@ -128,6 +160,7 @@
 <script lang="ts" setup>
 import { Prisma } from "@prisma/client";
 import AddEventTicket from "~/components/Form/AddEventTicket.vue";
+import UpdateEventTIcket from "~/components/Form/UpdateEventTIcket.vue";
 
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
@@ -137,6 +170,7 @@ const { setError } = useCustomError();
 const { $client } = useNuxtApp();
 const router = useRouter();
 const formAddEventTicket = ref<typeof AddEventTicket>();
+const formUpdateEventTicket = ref<typeof UpdateEventTIcket>();
 const breakpoint = useBreakpoint();
 
 useHead({
@@ -218,6 +252,11 @@ const showDeleteModal = (eventTicket: Prisma.EventTicketGetPayload<{}>) => {
 
 const onAdded = () => {
   state.isAddModalShown = false;
+  refresh();
+};
+
+const onUpdated = () => {
+  state.isUpdateModalShown = false;
   refresh();
 };
 

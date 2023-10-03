@@ -110,6 +110,72 @@ export const eventTicketRouter = router({
       }
     }),
 
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string(),
+        description: z.string(),
+        price: z.number(),
+        quota: z.number(),
+        eventId: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { db, id: userId } = ctx;
+        const { id, name, description, price, quota, eventId } = input;
+
+        const organizer = await db.organizer.findUnique({
+          where: {
+            userId,
+          },
+        });
+
+        let eventTicket = await db.eventTicket.findUnique({
+          include: {
+            event: true,
+          },
+          where: {
+            id,
+          },
+        });
+
+        if (eventTicket?.event.organizerId !== organizer?.id) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "unauthorized",
+          });
+        }
+
+        eventTicket = await db.eventTicket.update({
+          include: {
+            event: true,
+          },
+          data: {
+            name,
+            description,
+            price,
+            quota,
+            eventId,
+          },
+          where: {
+            id,
+          },
+        });
+
+        return eventTicket;
+      } catch (err: any) {
+        throw new TRPCError({
+          code:
+            err.message === "unauthorized"
+              ? "UNAUTHORIZED"
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
+
   delete: protectedProcedure
     .input(
       z.object({
