@@ -1,20 +1,30 @@
 <template>
-  <NavbarDefault />
-  <main style="width: 100%; display: flex">
-    <div class="wrapper" style="margin: 0 auto; width: 100%; max-width: 1200px">
-      <slot />
-    </div>
-  </main>
+  <div
+    style="
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 100vh;
+    "
+  >
+    <NavbarDefault />
+    <main style="width: 100%; display: flex; height: 100%; flex: 1 1 0%">
+      <div style="margin: 0 auto; width: 100%; max-width: 1200px">
+        <slot />
+      </div>
+    </main>
+    <FooterDefault />
+  </div>
 </template>
 
 <style scoped>
-.wrapper {
-  padding: 0 16px 16px 16px;
+main {
+  padding: 16px;
 }
 
 @media (min-width: 768px) {
-  .wrapper {
-    padding: 0 24px 24px 24px;
+  main {
+    padding: 24px;
   }
 }
 </style>

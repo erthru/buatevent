@@ -19,9 +19,12 @@ export const useBreakpoint = () => {
 
   if (typeof window !== "undefined") {
     const width = document.body.clientWidth;
-    breakpoint.value = calculate(width);
 
-    addEventListener("resize", () => {
+    nextTick(() => {
+      breakpoint.value = calculate(width);
+    });
+
+    window.addEventListener("resize", () => {
       const width = document.body.clientWidth;
       breakpoint.value = calculate(width);
     });

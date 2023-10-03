@@ -209,8 +209,8 @@ const sidebarItems = computed(() => {
       },
     },
     {
-      title: "Bantuan",
-      to: "/help",
+      title: "Kontak",
+      to: "#",
       isActive: false,
       icon: Service,
       isShown: true,

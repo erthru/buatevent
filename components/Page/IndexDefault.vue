@@ -1,3 +1,3 @@
 <template>
-  <p style="height: 4000px;">content</p>
+  <p>content</p>
 </template>

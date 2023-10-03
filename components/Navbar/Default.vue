@@ -1,13 +1,19 @@
 <template>
   <nav
-    style="position: sticky; top: 0; display: flex; width: 100%"
+    style="
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      z-index: 10;
+    "
     :style="{
       backgroundColor: state.isTransparent ? 'transparent' : 'white',
       boxShadow: state.isTransparent ? 'none' : 'var(--el-box-shadow-light)',
     }"
   >
     <div
-      class="wrapper"
       style="
         display: flex;
         width: 100%;
@@ -19,6 +25,13 @@
     >
       <NuxtLink to="/">
         <img
+          v-if="breakpoint === 'sm'"
+          src="/images/logo-short.png"
+          alt="logo"
+          style="width: auto; height: 21px"
+        />
+        <img
+          v-else
           src="/images/logo.png"
           alt="logo"
           style="width: auto; height: 21px"
@@ -27,7 +40,7 @@
       <ElInput
         placeholder="Cari Event ..."
         class="search"
-        style="flex: 1 1 0%; margin-left: 28px"
+        style="flex: 1 1 0%"
         :prefix-icon="Search"
         size="large"
       />
@@ -35,7 +48,6 @@
         class="actions"
         style="
           margin-left: auto;
-          display: flex;
           align-items: center;
           column-gap: 26px;
           font-size: 14px;
@@ -46,8 +58,8 @@
           style="font-weight: 500; color: #303133"
           >Buat Event</NuxtLink
         >
-        <NuxtLink to="/help" style="font-weight: 500; color: #303133"
-          >Bantuan</NuxtLink
+        <NuxtLink to="/#contact" style="font-weight: 500; color: #303133"
+          >Kontak</NuxtLink
         >
         <NuxtLink to="/login" style="font-weight: 500; color: #303133"
           >Login</NuxtLink
@@ -57,6 +69,30 @@
         >
       </div>
     </div>
+    <div
+      class="mobile-actions"
+      style="
+        margin: 0 auto;
+        font-size: 14px;
+        column-gap: 18px;
+        margin-top: 12px;
+      "
+    >
+      <NuxtLink
+        to="/dashboard/events/add"
+        style="font-weight: 500; color: #303133"
+        >Buat Event</NuxtLink
+      >
+      <NuxtLink to="/#contact" style="font-weight: 500; color: #303133"
+        >Kontak</NuxtLink
+      >
+      <NuxtLink to="/login" style="font-weight: 500; color: #303133"
+        >Login</NuxtLink
+      >
+      <NuxtLink to="/register" style="font-weight: 500; color: #303133"
+        >Daftar</NuxtLink
+      >
+    </div>
   </nav>
 </template>
 
@@ -64,6 +100,7 @@
 import { Search } from "@element-plus/icons-vue";
 
 const route = useRoute();
+const breakpoint = useBreakpoint();
 
 const state = reactive({
   isTransparent: true,
@@ -91,21 +128,39 @@ watch(
 </script>
 
 <style scoped>
-nav .wrapper {
+nav {
   padding: 12px 16px;
 }
 
-nav .wrapper .search {
-  max-width: 80%;
+nav .search {
+  max-width: 100%;
+  margin-left: 12px;
+}
+
+nav .actions {
+  display: none;
+}
+
+nav .mobile-actions {
+  display: flex;
 }
 
 @media (min-width: 768px) {
-  nav .wrapper {
+  nav {
     padding: 14px 24px;
   }
 
-  nav .wrapper .search {
+  nav .search {
     max-width: 40%;
+    margin-left: 28px;
+  }
+
+  nav .actions {
+    display: flex;
+  }
+
+  nav .mobile-actions {
+    display: none;
   }
 }
 </style>
