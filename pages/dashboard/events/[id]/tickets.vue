@@ -66,11 +66,42 @@
   </ElCard>
   <ClientOnly>
     <ElDialog
+      v-model="state.isAddModalShown"
+      title="Tambah Tiket"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :width="breakpoint === 'sm' ? '90%' : '460px'"
+    >
+      <FormAddEventTicket
+        ref="formAddEventTicket"
+        style="margin-top: -16px; margin-bottom: -16px"
+        @update:loading="(loading) => (state.isAdding = loading)"
+        @added="onAdded"
+      />
+      <template #footer>
+        <div>
+          <ElButton
+            v-if="!state.isAdding"
+            @click="state.isAddModalShown = false"
+            >Tutup</ElButton
+          >
+          <ElButton
+            v-if="!state.isAdding"
+            type="primary"
+            @click="formAddEventTicket?.submit"
+            >Simpan</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+    <ElDialog
       v-model="state.isDeleteModalShown"
       title="Hapus Tiket"
       :show-close="false"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
+      :width="breakpoint === 'sm' ? '90%' : '460px'"
     >
       <p>Apakah anda yakin dengan keputusan ini?</p>
       <template #footer>
@@ -95,6 +126,7 @@
 
 <script lang="ts" setup>
 import { Prisma } from "@prisma/client";
+import AddEventTicket from "~/components/Form/AddEventTicket.vue";
 
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
@@ -103,6 +135,8 @@ const { user } = useUser();
 const { setError } = useCustomError();
 const { $client } = useNuxtApp();
 const router = useRouter();
+const formAddEventTicket = ref<typeof AddEventTicket>();
+const breakpoint = useBreakpoint();
 
 useHead({
   title: `Kelola Tiket Event | ${prc.appTitle}`,
@@ -177,6 +211,11 @@ const showDeleteModal = (eventTicket: Prisma.EventTicketGetPayload<{}>) => {
   state.isDeleteModalShown = true;
 };
 
+const onAdded = () => {
+  state.isAddModalShown = false;
+  refresh();
+};
+
 const _delete = async () => {
   try {
     state.isDeleting = true;
@@ -191,6 +230,7 @@ const _delete = async () => {
       type: "success",
     });
 
+    state.isDeleteModalShown = false;
     refresh();
   } catch (err: any) {
     ElNotification({

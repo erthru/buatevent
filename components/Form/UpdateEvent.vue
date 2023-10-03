@@ -215,6 +215,7 @@
         :show-close="false"
         :close-on-click-modal="false"
         :close-on-press-escape="false"
+        :width="breakpoint === 'sm' ? '90%' : '460px'"
       >
         <p>Apakah anda yakin dengan keputusan ini?</p>
         <template #footer>
@@ -251,6 +252,7 @@ const { public: prc } = useRuntimeConfig();
 const { user } = useUser();
 const route = useRoute();
 const emit = defineEmits(["updated"]);
+const breakpoint = useBreakpoint()
 
 const props = defineProps({
   event: {
