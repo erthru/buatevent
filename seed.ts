@@ -95,7 +95,7 @@ const main = async () => {
         data: {
           username: "organizer",
           name: "Buat Event Organizer",
-          avatar: "default.png",
+          avatar: "",
           phone: "82293389523",
           userId: userOrganizer.id,
         },

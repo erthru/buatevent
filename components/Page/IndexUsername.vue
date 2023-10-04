@@ -22,7 +22,7 @@
         {{ props.organizer?.name }}
       </p>
       <img
-        :src="`/uploads/${props.organizer?.avatar}`"
+        :src="`/uploads/${props.organizer?.avatar || 'default.png'}`"
         alt="avatar"
         style="width: 100%; height: 100%; object-fit: cover; position: absolute"
       />
@@ -61,11 +61,7 @@
           :body-style="{ padding: '0px' }"
         >
           <img
-            :src="
-              event.thumbnail
-                ? `/uploads/${event.thumbnail}`
-                : `/uploads/default.png`
-            "
+            :src="`/uploads/${event.thumbnail || 'default.png'}`"
             alt="thumbnail"
             style="width: 100%; height: 200px; object-fit: cover"
           />
@@ -81,8 +77,15 @@
               "
             >
               <time style="font-size: 14px"
-                >{{ new Date(event.startAt).toLocaleDateString() }}
-                {{ new Date(event.startAt).toLocaleTimeString() }}</time
+                >{{ new Date(event.startAt).toLocaleDateString("id") }}
+                {{ new Date(event.startAt).toLocaleTimeString("id") }}</time
+              >
+              <ElTag
+                v-if="getExpired(event.endAt)"
+                size="small"
+                type="danger"
+                style="margin-left: 8px"
+                >Expired</ElTag
               >
               <a :href="`/${event.slug}`" style="margin-left: auto">
                 <ElButton text type="primary" size="large">Lihat</ElButton>
@@ -120,6 +123,12 @@ const props = defineProps({
     },
   },
 });
+
+const getExpired = (endAt: Date): boolean => {
+  const todayTime = new Date().getTime();
+  const endDayTime = new Date(endAt).getTime();
+  return endDayTime < todayTime;
+};
 </script>
 
 <style scoped>

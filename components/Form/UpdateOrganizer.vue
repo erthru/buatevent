@@ -65,6 +65,7 @@
         :on-change="onSelectAvatar"
       >
         <img
+          v-if="form.avatar || state.selectedAvatar"
           :src="
             state.selectedAvatar
               ? getPreviewSelectedAvatar(state.selectedAvatar)
@@ -72,6 +73,20 @@
           "
           style="width: 175px; height: 175px; object-fit: cover"
         />
+        <div
+          v-else
+          style="
+            width: 220px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            background-color: #e6e6e6;
+          "
+        >
+          <ElIcon style="font-size: 32px; margin: 0 auto">
+            <Plus />
+          </ElIcon>
+        </div>
       </ElUpload>
     </ElFormItem>
     <ElButton type="primary" style="margin-top: -16px" @click="submit(formRef)"

@@ -114,7 +114,6 @@ onMounted(() => {
   checkTransparent();
 
   window.addEventListener("scroll", () => {
-    console.log(window.scrollY);
     checkTransparent();
   });
 });

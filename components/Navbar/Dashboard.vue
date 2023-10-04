@@ -13,7 +13,9 @@
       <Operation />
     </ElIcon>
     <div>
-      <p class="title" style="font-weight: 600; color: #303133">{{ menu.title.value }}</p>
+      <p class="title" style="font-weight: 600; color: #303133">
+        {{ menu.title.value }}
+      </p>
       <ElBreadcrumb separator="/" style="margin-top: 4px">
         <ElBreadcrumbItem
           v-for="(breadcrumb, i) in menu.breadcrumbs.value"
@@ -28,7 +30,7 @@
     <ElAvatar
       :src="
         user?.role === 'ORGANIZER'
-          ? `/uploads/${user?.organizer?.avatar}`
+          ? `/uploads/${user?.organizer?.avatar || 'default.png'}`
           : '/uploads/default.png'
       "
       style="margin-left: auto; object-fit: cover"
