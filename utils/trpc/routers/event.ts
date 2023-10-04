@@ -115,6 +115,9 @@ export const eventRouter = router({
           where: {
             organizerId: organizer?.id,
           },
+          orderBy: {
+            id: "desc",
+          },
         });
 
         return events.filter(

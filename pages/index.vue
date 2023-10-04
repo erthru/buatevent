@@ -3,6 +3,7 @@
   <PageIndexUsername
     v-if="data?.component === 'PageIndexUsername'"
     :events="data.events"
+    :organizer="data.organizer"
   />
 </template>
 
@@ -13,10 +14,6 @@ import dns from "dns";
 const { ssrContext, $client } = useNuxtApp();
 const { public: prc } = useRuntimeConfig();
 const { setError } = useCustomError();
-
-useHead({
-  title: `${prc.appTitle} | ${prc.appTagline}`,
-});
 
 const { data } = useLazyAsyncData("index", async () => {
   try {
@@ -36,6 +33,8 @@ const { data } = useLazyAsyncData("index", async () => {
         organizer: true;
       };
     }>[];
+
+    let organizer = null as Prisma.OrganizerGetPayload<{}> | null;
 
     if (host !== currentHost) {
       component = "PageIndexUsername";
@@ -64,17 +63,30 @@ const { data } = useLazyAsyncData("index", async () => {
         username: username!!,
       });
 
+      const _organizer = await $client.organizer.getByUsername.query({
+        username: username!!,
+      });
+
       events = _events as any;
+      organizer = _organizer as any;
     }
 
     return {
       component,
       layout,
       events,
+      organizer,
     };
   } catch (err: any) {
     setError(err?.data?.httpStatus || 500, err.message);
   }
+});
+
+useHead({
+  title:
+    data.value?.component === "PageIndexDefault"
+      ? `${prc.appTitle} | ${prc.appTagline}`
+      : `${data.value?.organizer?.name} | ${prc.appTitle}`,
 });
 
 onMounted(() => {
