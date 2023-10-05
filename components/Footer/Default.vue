@@ -98,13 +98,10 @@ const year = new Date().getFullYear();
 </script>
 
 <style scoped>
-footer {
-  padding: 16px;
-}
-
 footer .wrapper {
   flex-direction: column;
   row-gap: 48px;
+  padding: 16px;
 }
 
 footer .wrapper .logo {
@@ -136,12 +133,10 @@ footer .wrapper .contact-item {
 }
 
 @media (min-width: 768px) {
-  footer {
-    padding: 24px;
-  }
   footer .wrapper {
     flex-direction: row;
     row-gap: 0;
+    padding: 24px;
   }
 
   footer .wrapper .logo {

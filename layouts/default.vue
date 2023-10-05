@@ -18,12 +18,12 @@
 </template>
 
 <style scoped>
-main {
+main div {
   padding: 16px;
 }
 
 @media (min-width: 768px) {
-  main {
+  main div {
     padding: 24px;
   }
 }

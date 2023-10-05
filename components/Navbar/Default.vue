@@ -14,6 +14,7 @@
     }"
   >
     <div
+      class="content"
       style="
         display: flex;
         width: 100%;
@@ -128,15 +129,18 @@ watch(
 
 <style scoped>
 nav {
-  padding: 12px 16px;
+  padding: 12px 0;
+}
+nav .content {
+  padding: 0 16px;
 }
 
-nav .search {
+nav .content .search {
   max-width: 100%;
   margin-left: 12px;
 }
 
-nav .actions {
+nav .content .actions {
   display: none;
 }
 
@@ -146,15 +150,18 @@ nav .mobile-actions {
 
 @media (min-width: 768px) {
   nav {
-    padding: 14px 24px;
+    padding: 14px 0;
+  }
+  nav .content {
+    padding: 0 24px;
   }
 
-  nav .search {
+  nav .content .search {
     max-width: 40%;
     margin-left: 28px;
   }
 
-  nav .actions {
+  nav .content .actions {
     display: flex;
   }
 

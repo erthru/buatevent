@@ -1,10 +1,13 @@
 <template>
-  <PageIndexDefault v-if="data?.component === 'PageIndexDefault'" />
-  <PageIndexUsername
+  <NuxtLayout v-if="data?.component === 'PageIndexDefault'" name="default">
+    <PageIndexDefault />
+  </NuxtLayout>
+  <NuxtLayout
     v-if="data?.component === 'PageIndexUsername'"
-    :events="data.events"
-    :organizer="data.organizer"
-  />
+    name="public-organizer"
+  >
+    <PageIndexUsername :events="data.events" :organizer="data.organizer" />
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
@@ -14,6 +17,10 @@ import dns from "dns";
 const { ssrContext, $client } = useNuxtApp();
 const { public: prc } = useRuntimeConfig();
 const { setError } = useCustomError();
+
+definePageMeta({
+  layout: "empty",
+});
 
 const { data } = useLazyAsyncData("index", async () => {
   try {
@@ -26,7 +33,6 @@ const { data } = useLazyAsyncData("index", async () => {
       : window.location.host;
 
     let component = "PageIndexDefault";
-    let layout = "non-dashboard";
 
     let events = [] as Prisma.EventGetPayload<{
       include: {
@@ -38,7 +44,6 @@ const { data } = useLazyAsyncData("index", async () => {
 
     if (host !== currentHost) {
       component = "PageIndexUsername";
-      layout = "independent";
       let username = currentHost?.split(".")[0];
 
       const currentHostWithoutUsername = currentHost
@@ -73,7 +78,6 @@ const { data } = useLazyAsyncData("index", async () => {
 
     return {
       component,
-      layout,
       events,
       organizer,
     };
@@ -88,14 +92,4 @@ useHead({
       ? `${prc.appTitle} | ${prc.appTagline}`
       : `${data.value?.organizer?.name} | ${prc.appTitle}`,
 });
-
-watch(
-  () => data.value,
-  () => {
-    setPageLayout(data.value?.layout as any);
-  },
-  {
-    immediate: true,
-  }
-);
 </script>
