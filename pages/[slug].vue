@@ -1,5 +1,36 @@
 <template>
-  <pre>{{ data }}</pre>
+  <header
+    style="width: 100%; position: relative; display: flex; align-items: center"
+  >
+    <p
+      class="event-title"
+      style="
+        color: white;
+        z-index: 20;
+        text-align: center;
+        padding: 0 18px;
+        width: 100%;
+        font-weight: 600;
+      "
+    >
+      {{ data?.title }}
+    </p>
+    <img
+      :src="`/uploads/${data?.thumbnail || 'default.png'}`"
+      alt="avatar"
+      style="width: 100%; height: 100%; object-fit: cover; position: absolute"
+    />
+    <div
+      style="
+        background-color: rgba(0, 0, 0, 0.6);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+      "
+    />
+  </header>
 </template>
 
 <script lang="ts" setup>
@@ -73,3 +104,23 @@ const { data } = useLazyAsyncData("slug", async () => {
   }
 });
 </script>
+
+<style scoped>
+header {
+  height: 250px;
+}
+
+header .event-title {
+  font-size: 26px;
+}
+
+@media (min-width: 768px) {
+  header {
+    height: 340px;
+  }
+
+  header .event-title {
+    font-size: 46px;
+  }
+}
+</style>

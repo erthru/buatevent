@@ -27,6 +27,7 @@ useHead({
 
 definePageMeta({
   middleware: "guest-middleware",
+  layout: "non-dashboard",
 });
 </script>
 

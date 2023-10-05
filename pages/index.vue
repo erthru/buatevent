@@ -26,7 +26,7 @@ const { data } = useLazyAsyncData("index", async () => {
       : window.location.host;
 
     let component = "PageIndexDefault";
-    let layout = "default";
+    let layout = "non-dashboard";
 
     let events = [] as Prisma.EventGetPayload<{
       include: {
@@ -89,9 +89,13 @@ useHead({
       : `${data.value?.organizer?.name} | ${prc.appTitle}`,
 });
 
-onMounted(() => {
-  if (data.value?.layout !== "default") {
+watch(
+  () => data.value,
+  () => {
     setPageLayout(data.value?.layout as any);
+  },
+  {
+    immediate: true,
   }
-});
+);
 </script>
