@@ -24,7 +24,82 @@
         max-width: 1200px;
       "
     >
-      <ElCard style="width: 100%; flex: 1 1 0%"></ElCard>
+      <ElCard style="width: 100%; flex: 1 1 0%">
+        <div style="display: flex; align-items: center">
+          <p style="font-size: 28px; font-weight: 600; color: #303133">
+            {{ data?.title }}
+          </p>
+          <ElTag size="small" type="success" style="margin-left: 8px">{{
+            data?.category.name
+          }}</ElTag>
+        </div>
+        <div v-html="data?.body" style="margin-top: 16px" />
+        <div style="display: flex; align-items: center; margin-top: 18px">
+          <ElIcon style="color: #303133">
+            <DataBoard />
+          </ElIcon>
+          <p style="margin-left: 8px; text-transform: capitalize">
+            {{
+              data?.type === "BOTH"
+                ? "Offline & Online"
+                : data?.type.toLowerCase()
+            }}
+          </p>
+          <ElTag
+            v-if="getExpired(new Date(data?.endAt!!))"
+            size="small"
+            type="danger"
+            style="margin-left: 10px"
+            >Expired</ElTag
+          >
+        </div>
+        <div style="display: flex; align-items: center; margin-top: 12px">
+          <ElIcon style="color: #303133">
+            <Clock />
+          </ElIcon>
+          <p style="margin-left: 8px; color: #">
+            {{ new Date(data?.startAt!!).toLocaleDateString("id") }}
+            {{ new Date(data?.startAt!!).toLocaleTimeString("id") }} -
+            {{ new Date(data?.endAt!!).toLocaleDateString("id") }}
+            {{ new Date(data?.endAt!!).toLocaleTimeString("id") }}
+          </p>
+          <ElTag
+            v-if="getExpired(new Date(data?.endAt!!))"
+            size="small"
+            type="danger"
+            style="margin-left: 10px"
+            >Expired</ElTag
+          >
+        </div>
+        <div
+          style="
+            display: flex;
+            width: 100%;
+            align-items: center;
+            margin-top: 28px;
+          "
+        >
+          <img
+            :src="`/uploads/${data?.organizer.avatar || 'default.png'}`"
+            alt="thumbnail"
+            style="width: 46px; height: 46px; border-radius: 100%"
+          />
+          <div style="margin-left: 16px; display: flex; flex-direction: column">
+            <p style="font-size: 14px; font-weight: 500; color: #303133">
+              Oleh
+            </p>
+            <a style="font-size: 18px; font-weight: 600; color: #303133">
+              {{ data?.organizer.name }}
+            </a>
+            <a
+              href="/"
+              style="font-size: 12px; margin-top: 2px; font-weight: 600"
+            >
+              Lihat Event Lainnya
+            </a>
+          </div>
+        </div>
+      </ElCard>
       <ElCard class="sidebar"></ElCard>
     </div>
   </div>
@@ -32,6 +107,7 @@
 
 <script lang="ts" setup>
 import dns from "dns";
+import { Clock, DataBoard } from "@element-plus/icons-vue";
 
 definePageMeta({
   layout: "public-organizer",
@@ -104,6 +180,12 @@ const { data } = useLazyAsyncData("slug", async () => {
 useHead({
   title: `${data.value?.title} | ${prc.appTitle}`,
 });
+
+const getExpired = (endAt: Date): boolean => {
+  const todayTime = new Date().getTime();
+  const endDayTime = new Date(endAt).getTime();
+  return endDayTime < todayTime;
+};
 </script>
 
 <style scoped>
