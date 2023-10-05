@@ -100,7 +100,58 @@
           </div>
         </div>
       </ElCard>
-      <ElCard class="sidebar"></ElCard>
+      <ElCard class="sidebar" style="height: max-content">
+        <p style="font-size: 18px; font-weight: 600">Pilih Tiket</p>
+        <ElSelect
+          v-model="state.ticket"
+          placeholder="Pilih Tiket"
+          style="width: 100%; margin-top: 14px"
+        >
+          <ElOption
+            v-for="item in data?.eventTickets"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id.toString()"
+          />
+        </ElSelect>
+        <div v-loading="state.isCheckingQuota" style="margin-top: 10px">
+          <p style="font-weight: 500; font-size: 14px">
+            Rp
+            <span
+              :style="{
+                color: data?.eventTickets.find(
+                  (et) => et.id === Number(state.ticket)
+                )?.price
+                  ? '#303133'
+                  : '#529b2e',
+              }"
+              >{{
+                data?.eventTickets.find((et) => et.id === Number(state.ticket))
+                  ?.price
+                  ? data?.eventTickets
+                      .find((et) => et.id === Number(state.ticket))
+                      ?.price.toLocaleString()
+                  : "Gratis"
+              }}</span
+            >
+          </p>
+          <p style="font-weight: 500; font-size: 14px; margin-top: 10px">
+            Sisa Kuota:
+            <span
+              :style="{
+                color: state.quota > 0 ? '#529b2e' : '#c45656',
+              }"
+              >{{ state.quota }}</span
+            >
+          </p>
+          <ElButton
+            :disabled="state.quota === 0"
+            type="primary"
+            style="margin-top: 12px; width: 100%"
+            >Beli Tiket</ElButton
+          >
+        </div>
+      </ElCard>
     </div>
   </div>
 </template>
@@ -117,6 +168,12 @@ const { $client, ssrContext } = useNuxtApp();
 const { public: prc } = useRuntimeConfig();
 const route = useRoute();
 const { setError } = useCustomError();
+
+const state = reactive({
+  ticket: "",
+  isCheckingQuota: false,
+  quota: 0,
+});
 
 const { data } = useLazyAsyncData("slug", async () => {
   try {
@@ -186,6 +243,46 @@ const getExpired = (endAt: Date): boolean => {
   const endDayTime = new Date(endAt).getTime();
   return endDayTime < todayTime;
 };
+
+const checkTicketQuota = async () => {
+  try {
+    state.isCheckingQuota = true;
+
+    const quotaLeft = await $client.eventTicket.getQuotaLeft.query({
+      id: Number(state.ticket),
+    });
+
+    state.quota = quotaLeft;
+  } catch (err: any) {
+    state.quota = 0;
+
+    ElNotification({
+      title: "Error",
+      message: err.message,
+      type: "error",
+    });
+  } finally {
+    state.isCheckingQuota = false;
+  }
+};
+
+watch(
+  () => data.value,
+  (val) => {
+    state.ticket = val?.eventTickets[0]?.id.toString() || "";
+  },
+  { immediate: true }
+);
+
+watch(
+  () => state.ticket,
+  () => {
+    checkTicketQuota();
+  },
+  {
+    immediate: true,
+  }
+);
 </script>
 
 <style scoped>

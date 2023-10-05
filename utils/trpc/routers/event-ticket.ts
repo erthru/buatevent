@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { protectedProcedure, router } from "..";
+import { protectedProcedure, publicProcedure, router } from "..";
 import z from "zod";
 
 export const eventTicketRouter = router({
@@ -49,6 +49,39 @@ export const eventTicketRouter = router({
             err.message === "unauthorized"
               ? "UNAUTHORIZED"
               : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
+
+  getQuotaLeft: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const { db } = ctx;
+        const { id } = input;
+
+        const eventTicket = await db.eventTicket.findUnique({
+          where: {
+            id,
+          },
+        });
+
+        const paidEventMembers = await db.eventMember.count({
+          where: {
+            eventId: eventTicket?.id,
+            status: "PAID",
+          },
+        });
+
+        return eventTicket?.quota!! - paidEventMembers;
+      } catch (err: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
           message: err.message,
         });
       }
