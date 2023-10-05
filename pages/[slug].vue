@@ -8,33 +8,10 @@
         align-items: center;
       "
     >
-      <p
-        class="event-title"
-        style="
-          color: white;
-          z-index: 20;
-          text-align: center;
-          padding: 0 18px;
-          width: 100%;
-          font-weight: 600;
-        "
-      >
-        {{ data?.title }}
-      </p>
       <img
         :src="`/uploads/${data?.thumbnail || 'default.png'}`"
         alt="avatar"
-        style="width: 100%; height: 100%; object-fit: cover; position: absolute"
-      />
-      <div
-        style="
-          background-color: rgba(0, 0, 0, 0.6);
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          top: 0;
-          left: 0;
-        "
+        style="width: 100%; height: 100%; object-fit: cover"
       />
     </header>
     <div
@@ -48,7 +25,7 @@
       "
     >
       <ElCard style="width: 100%; flex: 1 1 0%"></ElCard>
-      <ElCard></ElCard>
+      <ElCard class="sidebar"></ElCard>
     </div>
   </div>
 </template>
@@ -143,6 +120,10 @@ header .event-title {
   padding: 16px;
 }
 
+.content .sidebar {
+  width: 100%;
+}
+
 @media (min-width: 768px) {
   header {
     height: 340px;
@@ -155,6 +136,10 @@ header .event-title {
   .content {
     flex-direction: row;
     padding: 24px;
+  }
+
+  .content .sidebar {
+    width: 350px;
   }
 }
 </style>

@@ -75,32 +75,12 @@ const main = async () => {
       },
     });
 
-    const userOrganizer = await db.user.create({
+    await db.admin.create({
       data: {
-        email: "organizer@buatevent.com",
-        password: encryptedPassword,
-        role: "ORGANIZER",
-        isActive: true,
+        name: "Buat Event Admin",
+        userId: userAdmin.id,
       },
     });
-
-    await Promise.all([
-      db.admin.create({
-        data: {
-          name: "Buat Event Admin",
-          userId: userAdmin.id,
-        },
-      }),
-      db.organizer.create({
-        data: {
-          username: "organizer",
-          name: "Buat Event Organizer",
-          avatar: "",
-          phone: "82293389523",
-          userId: userOrganizer.id,
-        },
-      }),
-    ]);
 
     for (const category of categories) {
       await db.category.create({
