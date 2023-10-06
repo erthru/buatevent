@@ -9,6 +9,7 @@
 <script lang="ts" setup>
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { EditorConfig } from "@ckeditor/ckeditor5-core/src/editor/editorconfig";
 
 const props = defineProps({
   modelValue: {
@@ -23,7 +24,7 @@ const state = reactive({
   body: props.modelValue,
 });
 
-const config = {
+const config: EditorConfig = {
   toolbar: {
     items: [
       "undo",
@@ -45,7 +46,6 @@ const config = {
       "indent",
     ],
   },
-  rows: 10,
 };
 
 watch(
@@ -67,5 +67,9 @@ watch(
 
 .ck-rounded-corners {
   border-color: var(--el-border-color) !important;
+}
+
+.ck-content {
+  line-height: 160%;
 }
 </style>

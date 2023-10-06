@@ -33,7 +33,7 @@
             data?.category.name
           }}</ElTag>
         </div>
-        <div v-html="data?.body" style="margin-top: 16px" />
+        <div v-html="data?.body" style="margin-top: 16px; line-height: 160%;" />
         <div style="display: flex; align-items: center; margin-top: 18px">
           <ElIcon style="color: #303133">
             <DataBoard />

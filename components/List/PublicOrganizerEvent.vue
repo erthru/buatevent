@@ -29,7 +29,7 @@
             white-space: nowrap;
           "
         >
-          {{ event.body }}
+          {{ event.body.replace(/<[^>]*>/g, "") }}
         </p>
         <div style="display: flex; align-items: center; margin-top: 10px">
           <ElIcon style="color: #303133">
