@@ -24,7 +24,7 @@
         trigger: 'blur',
       }"
     >
-      <ClientEditor v-model="form.body" />
+      <CustomEditor v-model="form.body" />
     </ElFormItem>
     <ClientOnly>
       <div

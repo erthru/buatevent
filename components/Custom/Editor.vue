@@ -1,14 +1,14 @@
 <template>
-  <CKEditor.component
+  <component
+    v-if="state.Editor"
     v-model="state.body"
-    :editor="ClassicEditor"
+    :is="state.Editor"
+    :editor="state.ClassicEditor"
     :config="config"
   />
 </template>
 
 <script lang="ts" setup>
-import CKEditor from "@ckeditor/ckeditor5-vue";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { EditorConfig } from "@ckeditor/ckeditor5-core/src/editor/editorconfig";
 
 const props = defineProps({
@@ -22,6 +22,8 @@ const emit = defineEmits(["update:modelValue"]);
 
 const state = reactive({
   body: props.modelValue,
+  Editor: null as any,
+  ClassicEditor: null as any,
 });
 
 const config: EditorConfig = {
@@ -47,6 +49,13 @@ const config: EditorConfig = {
     ],
   },
 };
+
+onMounted(async () => {
+  const Editor = await import("@ckeditor/ckeditor5-vue");
+  const ClassicEditor = await import("@ckeditor/ckeditor5-build-classic");
+  state.Editor = markRaw(Editor.default.component);
+  state.ClassicEditor = markRaw(ClassicEditor.default);
+});
 
 watch(
   () => state.body,
