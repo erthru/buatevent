@@ -24,11 +24,7 @@
         trigger: 'blur',
       }"
     >
-      <ElInput
-        v-model="form.body"
-        type="textarea"
-        placeholder="Masukkan isi postingan"
-      />
+      <ClientEditor v-model="form.body" />
     </ElFormItem>
     <ClientOnly>
       <div

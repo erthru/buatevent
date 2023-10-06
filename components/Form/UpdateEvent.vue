@@ -37,11 +37,7 @@
         trigger: 'blur',
       }"
     >
-      <ElInput
-        v-model="form.body"
-        type="textarea"
-        placeholder="Masukkan isi postingan"
-      />
+      <ClientEditor v-model="form.body" />
     </ElFormItem>
     <ClientOnly>
       <div
@@ -252,7 +248,7 @@ const { public: prc } = useRuntimeConfig();
 const { user } = useUser();
 const route = useRoute();
 const emit = defineEmits(["updated"]);
-const breakpoint = useBreakpoint()
+const breakpoint = useBreakpoint();
 
 const props = defineProps({
   event: {
