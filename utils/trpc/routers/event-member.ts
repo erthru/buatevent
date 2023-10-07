@@ -30,19 +30,20 @@ export const eventMemberRouter = router({
           },
         });
 
-        let eventMember = await db.eventMember.findFirst({
-          where: {
-            email,
-            eventTicketId,
-          },
-        });
-
-        const paidEventMembers = await db.eventMember.count({
-          where: {
-            eventTicketId: eventTicket?.id,
-            status: "PAID",
-          },
-        });
+        let [eventMember, paidEventMembers] = await Promise.all([
+          db.eventMember.findFirst({
+            where: {
+              email,
+              eventTicketId,
+            },
+          }),
+          db.eventMember.count({
+            where: {
+              eventTicketId: eventTicket?.id,
+              status: "PAID",
+            },
+          }),
+        ]);
 
         if (eventTicket?.quota!! - paidEventMembers === 0) {
           throw new TRPCError({
