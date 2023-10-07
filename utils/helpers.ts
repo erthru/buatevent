@@ -50,3 +50,18 @@ export const generateSlug = (str: string): string => {
 
   return `${slug}-${time}`;
 };
+
+export const generateUniqueString = () => {
+  const characters =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+  let result = "";
+
+  for (let i = 0; i < 10; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    const randomCharacter = characters.charAt(randomIndex);
+    result += randomCharacter;
+  }
+
+  return result;
+};

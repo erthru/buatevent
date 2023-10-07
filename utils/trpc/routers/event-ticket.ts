@@ -73,7 +73,7 @@ export const eventTicketRouter = router({
 
         const paidEventMembers = await db.eventMember.count({
           where: {
-            eventId: eventTicket?.id,
+            eventTicketId: eventTicket?.id,
             status: "PAID",
           },
         });
@@ -229,6 +229,11 @@ export const eventTicketRouter = router({
         const eventTicket = await db.eventTicket.findUnique({
           include: {
             event: true,
+            _count: {
+              select: {
+                eventMembers: true,
+              },
+            },
           },
           where: {
             id,
@@ -242,6 +247,13 @@ export const eventTicketRouter = router({
           });
         }
 
+        if ((eventTicket?._count?.eventMembers || 0) > 0) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "member exists",
+          });
+        }
+
         await db.eventTicket.delete({
           where: {
             id,
@@ -252,6 +264,8 @@ export const eventTicketRouter = router({
           code:
             err.message === "unauthorized"
               ? "UNAUTHORIZED"
+              : err.message.includes("cannot delete")
+              ? "FORBIDDEN"
               : "INTERNAL_SERVER_ERROR",
           message: err.message,
         });

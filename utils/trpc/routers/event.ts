@@ -382,7 +382,7 @@ export const eventRouter = router({
           include: {
             _count: {
               select: {
-                eventMembers: true,
+                eventTickets: true,
               },
             },
           },
@@ -398,10 +398,10 @@ export const eventRouter = router({
           });
         }
 
-        if ((event?._count?.eventMembers || 0) > 0) {
+        if ((event?._count?.eventTickets || 0) > 0) {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "cannot delete, member exists",
+            message: "cannot delete, ticket exists",
           });
         }
 

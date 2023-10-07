@@ -103,7 +103,7 @@
       <ElCard class="sidebar" style="height: max-content">
         <p style="font-size: 18px; font-weight: 600">Pilih Tiket</p>
         <ElSelect
-          v-model="state.ticket"
+          v-model="state.ticketId"
           placeholder="Pilih Tiket"
           style="width: 100%; margin-top: 14px"
         >
@@ -120,16 +120,17 @@
             <span
               :style="{
                 color: data?.eventTickets.find(
-                  (et) => et.id === Number(state.ticket)
+                  (et) => et.id === Number(state.ticketId)
                 )?.price
                   ? '#303133'
                   : '#529b2e',
               }"
               >{{
-                data?.eventTickets.find((et) => et.id === Number(state.ticket))
-                  ?.price
+                data?.eventTickets.find(
+                  (et) => et.id === Number(state.ticketId)
+                )?.price
                   ? data?.eventTickets
-                      .find((et) => et.id === Number(state.ticket))
+                      .find((et) => et.id === Number(state.ticketId))
                       ?.price.toLocaleString()
                   : "Gratis"
               }}</span
@@ -148,7 +149,7 @@
             :disabled="state.quota === 0"
             type="primary"
             style="margin-top: 12px; width: 100%"
-            @click="state.isBuyTicketModalShown = true"
+            @click="showBuyTicketModal"
             >Beli Tiket</ElButton
           >
         </div>
@@ -159,7 +160,7 @@
     <ElDialog
       v-model="state.isBuyTicketModalShown"
       :title="`Beli ${
-        data?.eventTickets.find((et) => et.id === Number(state.ticket))?.name
+        data?.eventTickets.find((et) => et.id === Number(state.ticketId))?.name
       } ${data?.title}`"
       :show-close="false"
       :close-on-click-modal="false"
@@ -170,8 +171,10 @@
         :key="state.buyTicketFormKey"
         ref="formBuyTicket"
         :price="
-          data?.eventTickets.find((et) => et.id === Number(state.ticket))?.price
+          data?.eventTickets.find((et) => et.id === Number(state.ticketId))
+            ?.price
         "
+        :event-ticket-id="Number(state.ticketId)"
         @update:loading="(loading) => (state.isBuying = loading)"
         @bought="onBought"
       />
@@ -180,16 +183,16 @@
         <span
           :style="{
             color: data?.eventTickets.find(
-              (et) => et.id === Number(state.ticket)
+              (et) => et.id === Number(state.ticketId)
             )?.price
               ? '#303133'
               : '#529b2e',
           }"
           >{{
-            data?.eventTickets.find((et) => et.id === Number(state.ticket))
+            data?.eventTickets.find((et) => et.id === Number(state.ticketId))
               ?.price
               ? data?.eventTickets
-                  .find((et) => et.id === Number(state.ticket))
+                  .find((et) => et.id === Number(state.ticketId))
                   ?.price.toLocaleString()
               : "Gratis"
           }}</span
@@ -231,7 +234,7 @@ const breakpoint = useBreakpoint();
 const formBuyTicket = ref<typeof FormBuyTicket>();
 
 const state = reactive({
-  ticket: "",
+  ticketId: "",
   isCheckingQuota: false,
   quota: 0,
   isBuyTicketModalShown: false,
@@ -313,7 +316,7 @@ const checkTicketQuota = async () => {
     state.isCheckingQuota = true;
 
     const quotaLeft = await $client.eventTicket.getQuotaLeft.query({
-      id: Number(state.ticket),
+      id: Number(state.ticketId),
     });
 
     state.quota = quotaLeft;
@@ -330,6 +333,11 @@ const checkTicketQuota = async () => {
   }
 };
 
+const showBuyTicketModal = () => {
+  state.buyTicketFormKey = `${new Date().getTime()}-btfk`;
+  state.isBuyTicketModalShown = true;
+};
+
 const onBought = () => {
   state.isBuyTicketModalShown = false;
 };
@@ -337,13 +345,13 @@ const onBought = () => {
 watch(
   () => data.value,
   (val) => {
-    state.ticket = val?.eventTickets[0]?.id.toString() || "";
+    state.ticketId = val?.eventTickets[0]?.id.toString() || "";
   },
   { immediate: true }
 );
 
 watch(
-  () => state.ticket,
+  () => state.ticketId,
   () => {
     checkTicketQuota();
   },

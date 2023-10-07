@@ -85,7 +85,6 @@ model Event {
     organizerId  Int
     organizer    Organizer     @relation(fields: [organizerId], references: [id])
     eventTickets EventTicket[]
-    eventMembers EventMember[]
 }
 
 model EventTicket {
@@ -110,8 +109,6 @@ model EventMember {
     status         EventMemberStatus
     createdAt      DateTime          @default(now())
     updatedAt      DateTime?         @updatedAt
-    eventId        Int
-    event          Event             @relation(fields: [eventId], references: [id])
     eventTicketId  Int
     eventTicket    EventTicket       @relation(fields: [eventTicketId], references: [id])
 }

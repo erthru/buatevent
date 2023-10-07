@@ -54,6 +54,11 @@ const props = defineProps({
     type: Number,
     default: false,
   },
+
+  eventTicketId: {
+    type: Number,
+    default: null,
+  },
 });
 
 const formRef = ref<FormInstance>();
@@ -88,9 +93,14 @@ const _submit = async (formInstance: FormInstance | undefined) => {
     try {
       state.isLoading = true;
 
-      // do something...
+      await $client.eventMember.buyTicket.mutate({
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        eventTicketId: props.eventTicketId,
+      });
 
-      if (props.price) {
+      if (!props.price) {
         ElNotification({
           title: "Sukses",
           message:
@@ -109,7 +119,11 @@ const _submit = async (formInstance: FormInstance | undefined) => {
     } catch (err: any) {
       ElNotification({
         title: "Error",
-        message: err.message,
+        message: err.message.includes("unpaid")
+          ? "Anda sudah mendaftar sebelumnya, cek email untuk melanjutkan pembayaran anda"
+          : err.message.includes("paid")
+          ? "Anda telah terdaftar, silahkan cek email anda"
+          : err.message,
         type: "error",
       });
     } finally {

@@ -3,12 +3,14 @@ import { userRouter } from "./user";
 import { eventRouter } from "./event";
 import { categoryRouter } from "./category";
 import { eventTicketRouter } from "./event-ticket";
+import { eventMemberRouter } from "./event-member";
 import { organizerRouter } from "./organizer";
 
 export const appRouter = router({
   user: userRouter,
   event: eventRouter,
   eventTicket: eventTicketRouter,
+  eventMember: eventMemberRouter,
   category: categoryRouter,
   organizer: organizerRouter,
 });
