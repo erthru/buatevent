@@ -33,7 +33,7 @@
             data?.category.name
           }}</ElTag>
         </div>
-        <div v-html="data?.body" style="margin-top: 16px; line-height: 160%;" />
+        <div v-html="data?.body" style="margin-top: 16px; line-height: 160%" />
         <div style="display: flex; align-items: center; margin-top: 18px">
           <ElIcon style="color: #303133">
             <DataBoard />
@@ -148,12 +148,40 @@
             :disabled="state.quota === 0"
             type="primary"
             style="margin-top: 12px; width: 100%"
+            @click="state.isBuyTicketModalShown = true"
             >Beli Tiket</ElButton
           >
         </div>
       </ElCard>
     </div>
   </div>
+  <ClientOnly>
+    <ElDialog
+      v-model="state.isBuyTicketModalShown"
+      title="Beli Tiket"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :width="breakpoint === 'sm' ? '90%' : '460px'"
+    >
+      <template #footer>
+        <div>
+          <ElButton
+            v-if="!state.isBuying"
+            @click="state.isBuyTicketModalShown = false"
+            >Tutup</ElButton
+          >
+          <ElButton
+            type="primary"
+            @click="buyTicket"
+            :disabled="state.isBuying"
+            v-loading="state.isBuying"
+            >Beli</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+  </ClientOnly>
 </template>
 
 <script lang="ts" setup>
@@ -168,11 +196,14 @@ const { $client, ssrContext } = useNuxtApp();
 const { public: prc } = useRuntimeConfig();
 const route = useRoute();
 const { setError } = useCustomError();
+const breakpoint = useBreakpoint();
 
 const state = reactive({
   ticket: "",
   isCheckingQuota: false,
   quota: 0,
+  isBuyTicketModalShown: false,
+  isBuying: false,
 });
 
 const { data } = useLazyAsyncData("slug", async () => {
@@ -263,6 +294,40 @@ const checkTicketQuota = async () => {
     });
   } finally {
     state.isCheckingQuota = false;
+  }
+};
+
+const buyTicket = async () => {
+  try {
+    state.isBuying = true;
+
+    // do something...
+
+    if (
+      data.value?.eventTickets.find((et) => et.id === Number(state.ticket))
+        ?.price === 0
+    ) {
+      ElNotification({
+        title: "Sukses",
+        message:
+          "Berhasil membeli tiket, detail tiket akan dikirimkan ke email anda",
+        type: "success",
+      });
+    } else {
+      ElNotification({
+        title: "Sukses",
+        message: "Silahkan cek email untuk melanjutkan pembayaran anda",
+        type: "success",
+      });
+    }
+  } catch (err: any) {
+    ElNotification({
+      title: "Error",
+      message: err.message,
+      type: "error",
+    });
+  } finally {
+    state.isBuying = false;
   }
 };
 

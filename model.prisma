@@ -21,6 +21,7 @@ enum EventType {
 enum EventMemberStatus {
     UNPAID
     PAID
+    EXPIRED
 }
 
 model User {
@@ -101,15 +102,16 @@ model EventTicket {
 }
 
 model EventMember {
-    id            Int               @id @default(autoincrement())
-    name          String
-    email         String
-    phone         String
-    status        EventMemberStatus
-    createdAt     DateTime          @default(now())
-    updatedAt     DateTime?         @updatedAt
-    eventId       Int
-    event         Event             @relation(fields: [eventId], references: [id])
-    eventTicketId Int
-    eventTicket   EventTicket       @relation(fields: [eventTicketId], references: [id])
+    id             Int               @id @default(autoincrement())
+    validationCode String            @unique
+    name           String
+    email          String
+    phone          String
+    status         EventMemberStatus
+    createdAt      DateTime          @default(now())
+    updatedAt      DateTime?         @updatedAt
+    eventId        Int
+    event          Event             @relation(fields: [eventId], references: [id])
+    eventTicketId  Int
+    eventTicket    EventTicket       @relation(fields: [eventTicketId], references: [id])
 }

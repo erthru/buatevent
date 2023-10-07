@@ -39,50 +39,47 @@
     >
       <CustomEditor v-model="form.body" />
     </ElFormItem>
-    <ClientOnly>
-      <div
-        class="c2c"
-        style="
-          display: flex;
-          align-items: center;
-          column-gap: 16px;
-          width: 100%;
-        "
+    <div
+      class="c2c"
+      style="display: flex; align-items: center; column-gap: 16px; width: 100%"
+    >
+      <ElFormItem
+        label="Mulai Pada"
+        prop="startAt"
+        :rules="{
+          required: true,
+          trigger: 'blur',
+        }"
+        style="width: 100%"
       >
-        <ElFormItem
-          label="Mulai Pada"
-          prop="startAt"
-          :rules="{
-            required: true,
-            trigger: 'blur',
-          }"
-          style="width: 100%"
-        >
+        <ClientOnly>
           <ElDatePicker
             v-model="form.startAt"
             type="datetime"
             placeholder="Pilih tgl & waktu"
             style="width: 100%"
           />
-        </ElFormItem>
-        <ElFormItem
-          label="Berakhir Pada"
-          prop="endAt"
-          :rules="{
-            required: true,
-            trigger: 'blur',
-          }"
-          style="width: 100%"
-        >
+        </ClientOnly>
+      </ElFormItem>
+      <ElFormItem
+        label="Berakhir Pada"
+        prop="endAt"
+        :rules="{
+          required: true,
+          trigger: 'blur',
+        }"
+        style="width: 100%"
+      >
+        <ClientOnly>
           <ElDatePicker
             v-model="form.endAt"
             type="datetime"
             placeholder="Pilih tgl & waktu"
             style="width: 100%"
           />
-        </ElFormItem>
-      </div>
-    </ClientOnly>
+        </ClientOnly>
+      </ElFormItem>
+    </div>
     <div
       class="c2c"
       style="display: flex; align-items: center; column-gap: 16px; width: 100%"
