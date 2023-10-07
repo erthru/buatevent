@@ -4,6 +4,8 @@ import z from "zod";
 import { generateUniqueString } from "~/utils/helpers";
 import { sendEmail } from "~/utils/mailer";
 
+const { paymentApiUrl, paymentSecretKey } = useRuntimeConfig();
+
 export const eventMemberRouter = router({
   buyTicket: publicProcedure
     .input(
@@ -82,10 +84,50 @@ export const eventMemberRouter = router({
               phone,
               email,
               status: eventTicket?.price ? "UNPAID" : "PAID",
+              invoiceId: "",
               invoiceLink: eventTicket?.price ? "undefined" : "",
               eventTicketId,
             },
           });
+
+          if (eventTicket?.price) {
+            const res = await $fetch(`${paymentApiUrl}/v2/invoices`, {
+              method: "post",
+              headers: {
+                Authorization: `Basic ${Buffer.from(
+                  `${paymentSecretKey}:`
+                ).toString("base64")}`,
+              },
+              body: {
+                external_id: `event-member-${eventMember.id}`,
+                amount: eventTicket.price,
+                customer: {
+                  given_names: name,
+                  email,
+                  mobile_number: `+62${phone}`,
+                },
+                invoice_duration: 84600,
+                currency: "IDR",
+                items: [
+                  {
+                    name: `${eventTicket.name} from ${eventTicket.event.title}`,
+                    quantity: 1,
+                    price: eventTicket.price,
+                  },
+                ],
+              },
+            });
+
+            eventMember = await db.eventMember.update({
+              data: {
+                invoiceId: (res as any).id,
+                invoiceLink: (res as any).invoice_url,
+              },
+              where: {
+                id: eventMember.id,
+              },
+            });
+          }
         }
 
         if (eventTicket?.price) {
@@ -94,7 +136,9 @@ export const eventMemberRouter = router({
             <p>Acara: ${eventTicket.event.title}</p>
             <p>Jenis Tiket: ${eventTicket.name}</p>
             <p>Harga: Rp ${eventTicket.price.toLocaleString()}</p>
-            <p>Silahkan klik link berikut untuk masuk ke menu pembayaran: undefined</p>
+            <p>Silahkan klik link berikut untuk masuk ke menu pembayaran: <a href="${
+              eventMember.invoiceLink
+            }">${eventMember.invoiceLink}</a></p>
           `;
 
           await sendEmail(

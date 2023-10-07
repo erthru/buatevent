@@ -146,7 +146,7 @@
             >
           </p>
           <ElButton
-            :disabled="state.quota === 0"
+            :disabled="state.quota === 0 || getExpired(new Date(data?.endAt!!))"
             type="primary"
             style="margin-top: 12px; width: 100%"
             @click="showBuyTicketModal"
@@ -178,7 +178,7 @@
         @update:loading="(loading) => (state.isBuying = loading)"
         @bought="onBought"
       />
-      <p style="font-size: 16px; font-weight: 500">
+      <p v-if="!state.isBuying" style="font-size: 16px; font-weight: 500">
         Rp
         <span
           :style="{
