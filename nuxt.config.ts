@@ -7,6 +7,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     port: process.env.PORT,
     tokenSecret: process.env.TOKEN_SECRET,
+    mailerUser: process.env.MAILER_USER,
+    mailerPassword: process.env.MAILER_PASSWORD,
     public: {
       baseUrl: process.env.BASE_URL,
       appTitle: "Buat Event",

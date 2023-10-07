@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "..";
 import z from "zod";
 import { generateUniqueString } from "~/utils/helpers";
+import { sendEmail } from "~/utils/mailer";
 
 export const eventMemberRouter = router({
   buyTicket: publicProcedure
@@ -19,6 +20,9 @@ export const eventMemberRouter = router({
         const { eventTicketId, name, phone, email } = input;
 
         const eventTicket = await db.eventTicket.findUnique({
+          include: {
+            event: true,
+          },
           where: {
             id: eventTicketId,
           },
@@ -78,15 +82,39 @@ export const eventMemberRouter = router({
               phone,
               email,
               status: eventTicket?.price ? "UNPAID" : "PAID",
+              invoiceLink: eventTicket?.price ? "undefined" : "",
               eventTicketId,
             },
           });
         }
 
         if (eventTicket?.price) {
-          // send billing invoice to user
+          const html = `
+            <p>Terima kasih ${name} telah menggunakan platform Buat Event, berikut detail pembayaran untuk tiket anda:</p>
+            <p>Acara: ${eventTicket.event.title}</p>
+            <p>Jenis Tiket: ${eventTicket.name}</p>
+            <p>Harga: Rp ${eventTicket.price.toLocaleString()}</p>
+            <p>Silahkan klik link berikut untuk masuk ke menu pembayaran: undefined</p>
+          `;
+
+          await sendEmail(
+            email,
+            `Pembayaran untuk Ticket ${eventTicket.name} dari ${eventTicket.event.title} | Buat Event`,
+            html
+          );
         } else {
-          // send ticket
+          const html = `
+            <p>Terima kasih ${name} telah menggunakan platform Buat Event, berikut detail tiket anda:</p>
+            <p>Acara: ${eventTicket?.event.title}</p>
+            <p>Jenis Tiket: ${eventTicket?.name}</p>
+            <p>Kode Validasi: ${eventMember.validationCode}</p>
+          `;
+
+          await sendEmail(
+            email,
+            `Detail Ticket ${eventTicket?.name} dari ${eventTicket?.event.title} | Buat Event`,
+            html
+          );
         }
 
         return eventMember;
