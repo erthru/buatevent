@@ -77,7 +77,7 @@ export const eventMemberRouter = router({
               name,
               phone,
               email,
-              status: (eventTicket?.price || 0) > 0 ? "UNPAID" : "PAID",
+              status: eventTicket?.price ? "UNPAID" : "PAID",
               eventTicketId,
             },
           });

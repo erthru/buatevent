@@ -398,7 +398,7 @@ export const eventRouter = router({
           });
         }
 
-        if ((event?._count?.eventTickets || 0) > 0) {
+        if (event?._count?.eventTickets) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "cannot delete, ticket exists",

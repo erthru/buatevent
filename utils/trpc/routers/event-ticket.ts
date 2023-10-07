@@ -247,7 +247,7 @@ export const eventTicketRouter = router({
           });
         }
 
-        if ((eventTicket?._count?.eventMembers || 0) > 0) {
+        if (eventTicket?._count?.eventMembers) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "member exists",
