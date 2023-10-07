@@ -290,7 +290,7 @@ const submit = async (formInstance: FormInstance | undefined) => {
 
       ElNotification({
         title: "Sukses",
-        message: "Berhasil menambahkan event",
+        message: "Berhasil menambahkan event. Silahkan tambahkan tiket",
         type: "success",
       });
 

@@ -76,7 +76,6 @@
       <FormAddEventTicket
         :key="state.addFormKey"
         ref="formAddEventTicket"
-        style="margin-top: -16px; margin-bottom: -16px"
         @update:loading="(loading) => (state.isAdding = loading)"
         @added="onAdded"
       />
@@ -107,7 +106,6 @@
       <FormUpdateEventTIcket
         :key="state.updateFormKey"
         ref="formUpdateEventTicket"
-        style="margin-top: -16px; margin-bottom: -16px"
         :event-ticket="state.selectedEventTicket"
         @update:loading="(loading) => (state.isUpdating = loading)"
         @updated="onUpdated"

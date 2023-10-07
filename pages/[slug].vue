@@ -158,12 +158,43 @@
   <ClientOnly>
     <ElDialog
       v-model="state.isBuyTicketModalShown"
-      title="Beli Tiket"
+      :title="`Beli ${
+        data?.eventTickets.find((et) => et.id === Number(state.ticket))?.name
+      } ${data?.title}`"
       :show-close="false"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       :width="breakpoint === 'sm' ? '90%' : '460px'"
     >
+      <FormBuyTicket
+        :key="state.buyTicketFormKey"
+        ref="formBuyTicket"
+        :price="
+          data?.eventTickets.find((et) => et.id === Number(state.ticket))?.price
+        "
+        @update:loading="(loading) => (state.isBuying = loading)"
+        @bought="onBought"
+      />
+      <p style="font-size: 16px; font-weight: 500">
+        Rp
+        <span
+          :style="{
+            color: data?.eventTickets.find(
+              (et) => et.id === Number(state.ticket)
+            )?.price
+              ? '#303133'
+              : '#529b2e',
+          }"
+          >{{
+            data?.eventTickets.find((et) => et.id === Number(state.ticket))
+              ?.price
+              ? data?.eventTickets
+                  .find((et) => et.id === Number(state.ticket))
+                  ?.price.toLocaleString()
+              : "Gratis"
+          }}</span
+        >
+      </p>
       <template #footer>
         <div>
           <ElButton
@@ -172,10 +203,9 @@
             >Tutup</ElButton
           >
           <ElButton
+            v-if="!state.isBuying"
             type="primary"
-            @click="buyTicket"
-            :disabled="state.isBuying"
-            v-loading="state.isBuying"
+            @click="formBuyTicket?.submit"
             >Beli</ElButton
           >
         </div>
@@ -187,6 +217,7 @@
 <script lang="ts" setup>
 import dns from "dns";
 import { Clock, DataBoard } from "@element-plus/icons-vue";
+import FormBuyTicket from "~/components/Form/BuyTicket.vue";
 
 definePageMeta({
   layout: "public-organizer",
@@ -197,6 +228,7 @@ const { public: prc } = useRuntimeConfig();
 const route = useRoute();
 const { setError } = useCustomError();
 const breakpoint = useBreakpoint();
+const formBuyTicket = ref<typeof FormBuyTicket>();
 
 const state = reactive({
   ticket: "",
@@ -204,6 +236,7 @@ const state = reactive({
   quota: 0,
   isBuyTicketModalShown: false,
   isBuying: false,
+  buyTicketFormKey: `${new Date().getTime()}-btfk`,
 });
 
 const { data } = useLazyAsyncData("slug", async () => {
@@ -297,38 +330,8 @@ const checkTicketQuota = async () => {
   }
 };
 
-const buyTicket = async () => {
-  try {
-    state.isBuying = true;
-
-    // do something...
-
-    if (
-      data.value?.eventTickets.find((et) => et.id === Number(state.ticket))
-        ?.price === 0
-    ) {
-      ElNotification({
-        title: "Sukses",
-        message:
-          "Berhasil membeli tiket, detail tiket akan dikirimkan ke email anda",
-        type: "success",
-      });
-    } else {
-      ElNotification({
-        title: "Sukses",
-        message: "Silahkan cek email untuk melanjutkan pembayaran anda",
-        type: "success",
-      });
-    }
-  } catch (err: any) {
-    ElNotification({
-      title: "Error",
-      message: err.message,
-      type: "error",
-    });
-  } finally {
-    state.isBuying = false;
-  }
+const onBought = () => {
+  state.isBuyTicketModalShown = false;
 };
 
 watch(
