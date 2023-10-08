@@ -1,6 +1,10 @@
 <template>
   <div class="counter" style="display: flex; width: 100%; gap: 16px">
-    <ElCard v-if="user?.role === 'ORGANIZER'" style="width: 100%">
+    <ElCard
+      v-if="user?.role === 'ORGANIZER'"
+      style="width: 100%"
+      v-loading="isLoading"
+    >
       <div style="display: flex; align-items: center; column-gap: 16px">
         <div style="width: 100%; flex: 1 1 0%">
           <p
@@ -20,7 +24,11 @@
         </ElIcon>
       </div>
     </ElCard>
-    <ElCard v-if="user?.role === 'ADMIN'" style="width: 100%">
+    <ElCard
+      v-if="user?.role === 'ADMIN'"
+      style="width: 100%"
+      v-loading="isLoading"
+    >
       <div style="display: flex; align-items: center; column-gap: 16px">
         <div style="width: 100%; flex: 1 1 0%">
           <p
@@ -40,7 +48,11 @@
         </ElIcon>
       </div>
     </ElCard>
-    <ElCard v-if="user?.role === 'ORGANIZER'" style="width: 100%">
+    <ElCard
+      v-if="user?.role === 'ORGANIZER'"
+      style="width: 100%"
+      v-loading="isLoading"
+    >
       <div style="display: flex; align-items: center; column-gap: 16px">
         <div style="width: 100%; flex: 1 1 0%">
           <p
@@ -66,7 +78,11 @@
         </ElIcon>
       </div>
     </ElCard>
-    <ElCard v-if="user?.role === 'ADMIN'" style="width: 100%">
+    <ElCard
+      v-if="user?.role === 'ADMIN'"
+      style="width: 100%"
+      v-loading="isLoading"
+    >
       <div style="display: flex; align-items: center; column-gap: 16px">
         <div style="width: 100%; flex: 1 1 0%">
           <p
@@ -109,7 +125,7 @@ definePageMeta({
   layout: "dashboard",
 });
 
-const { data } = useLazyAsyncData("dashboard", async () => {
+const { data, pending: isLoading } = useLazyAsyncData("dashboard", async () => {
   try {
     let eventsTotal = 0;
     let organizersTotal = 0;
