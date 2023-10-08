@@ -6,7 +6,6 @@
 
 <script setup lang="ts">
 const { public: prc } = useRuntimeConfig();
-const menu = useMenu();
 const { setError } = useCustomError();
 
 useHead({
@@ -20,14 +19,6 @@ definePageMeta({
 
 useLazyAsyncData("dashboard", async () => {
   try {
-    menu.setTitle("Dashboard");
-
-    menu.setBreadcrumbs([
-      {
-        title: "Dashboard",
-        to: "/dashboard",
-      },
-    ]);
   } catch (err: any) {
     setError(err?.data?.httpStatus || 500, err.message);
   }

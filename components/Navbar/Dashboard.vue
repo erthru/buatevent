@@ -14,9 +14,21 @@
     </ElIcon>
     <div>
       <p class="title" style="font-weight: 600; color: #303133">
-        {{ menu.title.value }}
+        {{
+          route.path === "/dashboard"
+            ? `Hai, ${
+                user?.role === "ADMIN"
+                  ? user?.admin?.name.split(" ")[0]
+                  : user?.organizer?.name.split(" ")[0]
+              }`
+            : menu.title.value
+        }}
       </p>
-      <ElBreadcrumb separator="/" style="margin-top: 4px">
+      <ElBreadcrumb
+        v-if="route.path !== '/dashboard'"
+        separator="/"
+        style="margin-top: 4px"
+      >
         <ElBreadcrumbItem
           v-for="(breadcrumb, i) in menu.breadcrumbs.value"
           :key="`breadcrumb-${i}`"
@@ -43,6 +55,7 @@ import { Operation } from "@element-plus/icons-vue";
 
 const menu = useMenu();
 const { user } = useUser();
+const route = useRoute();
 </script>
 
 <style scoped>
