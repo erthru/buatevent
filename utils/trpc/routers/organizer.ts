@@ -105,6 +105,13 @@ export const organizerRouter = router({
           });
         }
 
+        if (amount > user?.organizer?.balance!! - 6500) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "balance is sufficient",
+          });
+        }
+
         await $fetch(`${paymentApiUrl}/v2/payouts`, {
           method: "POST",
           headers: {

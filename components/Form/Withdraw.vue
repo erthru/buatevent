@@ -160,9 +160,7 @@ const checkAmount = (rule: any, value: any, callback: any) => {
   }
 
   if (Number(value) > props.balance - 6500) {
-    return callback(
-      new Error(`amount must be less or equal than ${props.balance - 6500}`)
-    );
+    return callback(new Error(`balance is not sufficient`));
   }
 
   return callback();
