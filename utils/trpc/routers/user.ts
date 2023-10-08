@@ -5,10 +5,13 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { writeFile } from "fs/promises";
 import { formatPhoneNumber } from "~/utils/helpers";
+import { PrismaClient } from "@prisma/client";
+
+const db = new PrismaClient();
 
 export const userRouter = router({
   profile: protectedProcedure.query(async ({ ctx }) => {
-    const { id, db } = ctx;
+    const { id } = ctx;
 
     try {
       const user = await db.user.findUnique({
@@ -37,11 +40,9 @@ export const userRouter = router({
         password: z.string(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       try {
         const { name, phone, username, email, password } = input;
-        const { db } = ctx;
-
         const encryptedPassword = await bcrypt.hash(password, 10);
 
         const organizer = await db.$transaction(async (tx) => {
@@ -84,7 +85,7 @@ export const userRouter = router({
       try {
         const { email, password } = input;
         const { tokenSecret } = useRuntimeConfig();
-        const { event, db } = ctx;
+        const { event } = ctx;
 
         const user = await db.user.findUnique({
           where: {
@@ -139,7 +140,7 @@ export const userRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         const { name, avatar, phone } = input;
-        const { id, db } = ctx;
+        const { id } = ctx;
 
         const user = await db.user.findUnique({
           include: {
@@ -197,7 +198,7 @@ export const userRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         const { name } = input;
-        const { id, db } = ctx;
+        const { id } = ctx;
 
         const user = await db.user.findUnique({
           include: {
@@ -232,7 +233,7 @@ export const userRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         const { password } = input;
-        const { id, db } = ctx;
+        const { id } = ctx;
 
         const encryptedPassword = await bcrypt.hash(password, 10);
 

@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
 const { paymentWebhookKey } = useRuntimeConfig();
-
 const db = new PrismaClient();
 
 export default defineEventHandler(async (event) => {

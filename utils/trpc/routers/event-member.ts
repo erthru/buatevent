@@ -3,7 +3,9 @@ import { publicProcedure, router } from "..";
 import z from "zod";
 import { generateUniqueString } from "~/utils/helpers";
 import { sendEmail } from "~/utils/mailer";
+import { PrismaClient } from "@prisma/client";
 
+const db = new PrismaClient();
 const { paymentApiUrl, paymentSecretKey } = useRuntimeConfig();
 
 export const eventMemberRouter = router({
@@ -16,9 +18,8 @@ export const eventMemberRouter = router({
         email: z.string(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input }) => {
       try {
-        const { db } = ctx;
         const { eventTicketId, name, phone, email } = input;
 
         const eventTicket = await db.eventTicket.findUnique({

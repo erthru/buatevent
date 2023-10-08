@@ -3,11 +3,14 @@ import { protectedProcedure, publicProcedure, router } from "..";
 import { z } from "zod";
 import { writeFile } from "fs/promises";
 import { generateSlug } from "@/utils/helpers";
+import { PrismaClient } from "@prisma/client";
+
+const db = new PrismaClient();
 
 export const eventRouter = router({
   getAllByOrganizer: protectedProcedure.query(async ({ ctx }) => {
     try {
-      const { id, db } = ctx;
+      const { id } = ctx;
 
       const organizer = await db.organizer.findUnique({
         where: {
@@ -34,7 +37,7 @@ export const eventRouter = router({
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       try {
-        const { id: userId, db } = ctx;
+        const { id: userId } = ctx;
         const { id } = input;
 
         const organizer = await db.organizer.findUnique({
@@ -75,9 +78,8 @@ export const eventRouter = router({
         username: z.string(),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       try {
-        const { db } = ctx;
         const { username } = input;
 
         const organizer = await db.organizer.findUnique({
@@ -126,9 +128,8 @@ export const eventRouter = router({
         slug: z.string(),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       try {
-        const { db } = ctx;
         const { username, slug } = input;
 
         const organizer = await db.organizer.findUnique({
@@ -195,7 +196,7 @@ export const eventRouter = router({
           categoryId,
         } = input;
 
-        const { db, id } = ctx;
+        const { id } = ctx;
 
         const organizer = await db.organizer.findUnique({
           where: {
@@ -274,7 +275,7 @@ export const eventRouter = router({
           categoryId,
         } = input;
 
-        const { db, id: userId } = ctx;
+        const { id: userId } = ctx;
 
         const organizer = await db.organizer.findUnique({
           where: {
@@ -343,7 +344,7 @@ export const eventRouter = router({
     .input(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
       try {
-        const { db, id: userId } = ctx;
+        const { id: userId } = ctx;
         const { id } = input;
 
         const organizer = await db.organizer.findUnique({

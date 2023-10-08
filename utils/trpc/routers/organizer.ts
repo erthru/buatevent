@@ -1,6 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "..";
 import z from "zod";
+import { PrismaClient } from "@prisma/client";
+
+const db = new PrismaClient();
 
 export const organizerRouter = router({
   getByUsername: publicProcedure
@@ -9,10 +12,9 @@ export const organizerRouter = router({
         username: z.string(),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       try {
         const { username } = input;
-        const { db } = ctx;
 
         const organizer = await db.organizer.findUnique({
           where: {

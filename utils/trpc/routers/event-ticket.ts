@@ -1,6 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, publicProcedure, router } from "..";
 import z from "zod";
+import { PrismaClient } from "@prisma/client";
+
+const db = new PrismaClient();
 
 export const eventTicketRouter = router({
   getAllByEventId: protectedProcedure
@@ -11,7 +14,7 @@ export const eventTicketRouter = router({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { db, id } = ctx;
+        const { id } = ctx;
         const { eventId } = input;
 
         const organizer = await db.organizer.findUnique({
@@ -54,9 +57,8 @@ export const eventTicketRouter = router({
         id: z.number(),
       })
     )
-    .query(async ({ ctx, input }) => {
+    .query(async ({ input }) => {
       try {
-        const { db } = ctx;
         const { id } = input;
 
         const eventTicket = await db.eventTicket.findUnique({
@@ -97,7 +99,7 @@ export const eventTicketRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { db, id } = ctx;
+        const { id } = ctx;
         const { name, description, price, quota, eventId } = input;
 
         const organizer = await db.organizer.findUnique({
@@ -148,7 +150,7 @@ export const eventTicketRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { db, id: userId } = ctx;
+        const { id: userId } = ctx;
         const { id, name, description, price, quota, eventId } = input;
 
         const organizer = await db.organizer.findUnique({
@@ -203,7 +205,7 @@ export const eventTicketRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        const { db, id: userId } = ctx;
+        const { id: userId } = ctx;
         const { id } = input;
 
         const organizer = await db.organizer.findUnique({
