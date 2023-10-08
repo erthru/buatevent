@@ -19,6 +19,7 @@ export default defineNuxtConfig({
       appTagline: "Solusi Lengkap untuk Acara Anda",
       appDescription:
         "Manajemen acara yang mudah dan lengkap di Buat Event. Solusi terbaik untuk merencanakan, mendaftarkan, dan mengelola acara Anda dengan efisien.",
+      paymentDashboardUrl: process.env.PAYMENT_DASHBOARD_URL,
       paymentPublicKey: process.env.PAYMENT_PUBLIC_KEY,
     },
   },

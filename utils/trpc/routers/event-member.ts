@@ -4,6 +4,7 @@ import z from "zod";
 import { generateUniqueString } from "~/utils/helpers";
 import { sendInvoice, sendTicket } from "~/utils/mailer";
 import { PrismaClient } from "@prisma/client";
+import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/rpc";
 
 const db = new PrismaClient();
 const { paymentApiUrl, paymentSecretKey } = useRuntimeConfig();
@@ -53,7 +54,13 @@ export const eventMemberRouter = router({
 
         return eventMembers;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
@@ -208,7 +215,13 @@ export const eventMemberRouter = router({
 
         return eventMember;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
@@ -259,7 +272,13 @@ export const eventMemberRouter = router({
           eventMember?.invoiceLink!!
         );
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
@@ -309,7 +328,13 @@ export const eventMemberRouter = router({
           eventMember?.validationCode!!
         );
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
@@ -391,7 +416,13 @@ export const eventMemberRouter = router({
 
         return eventMember;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 });

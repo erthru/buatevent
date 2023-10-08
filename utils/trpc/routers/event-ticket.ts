@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { protectedProcedure, publicProcedure, router } from "..";
 import z from "zod";
 import { PrismaClient } from "@prisma/client";
+import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/rpc";
 
 const db = new PrismaClient();
 
@@ -48,7 +49,13 @@ export const eventTicketRouter = router({
 
         return eventTickets;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
@@ -84,7 +91,13 @@ export const eventTicketRouter = router({
 
         return eventTicket?.quota!! - paidEventMembers;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
@@ -135,7 +148,13 @@ export const eventTicketRouter = router({
 
         return eventTicket;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
@@ -196,7 +215,13 @@ export const eventTicketRouter = router({
 
         return eventTicket;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
@@ -251,7 +276,13 @@ export const eventTicketRouter = router({
           },
         });
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 });

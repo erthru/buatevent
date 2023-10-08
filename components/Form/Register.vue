@@ -6,7 +6,7 @@
     label-position="top"
   >
     <ElFormItem
-      label="Nama"
+      label="Nama Organizer"
       prop="name"
       :rules="{
         required: true,

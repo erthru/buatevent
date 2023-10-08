@@ -1,11 +1,44 @@
 import { TRPCError } from "@trpc/server";
-import { publicProcedure, router } from "..";
+import { protectedProcedure, publicProcedure, router } from "..";
 import z from "zod";
 import { PrismaClient } from "@prisma/client";
+import { writeFile } from "fs/promises";
+import { formatPhoneNumber } from "~/utils/helpers";
+import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/rpc";
 
 const db = new PrismaClient();
 
 export const organizerRouter = router({
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const { id } = ctx;
+
+      const user = await db.user.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (user?.role !== "ADMIN") {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "unauthorized",
+        });
+      }
+
+      const organizers = await db.organizer.findMany();
+      return organizers;
+    } catch (err: any) {
+      throw new TRPCError({
+        code:
+          (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+            ? err.code
+            : "INTERNAL_SERVER_ERROR",
+        message: err.message,
+      });
+    }
+  }),
+
   getByUsername: publicProcedure
     .input(
       z.object({
@@ -24,7 +57,79 @@ export const organizerRouter = router({
 
         return organizer;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
+
+  update: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        avatar: z.string(),
+        phone: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const { name, avatar, phone } = input;
+        const { id } = ctx;
+
+        const user = await db.user.findUnique({
+          include: {
+            organizer: true,
+          },
+          where: {
+            id,
+          },
+        });
+
+        let organizer = await db.organizer.update({
+          data: {
+            name,
+            phone: formatPhoneNumber(phone),
+          },
+          where: {
+            id: user?.organizer?.id,
+          },
+        });
+
+        if (avatar) {
+          const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
+          const ext = avatar.split(";")[0].split("/")[1];
+          const name = `avatar-${unique}.${ext}`;
+
+          const fileBuffer = Buffer.from(
+            avatar.replace(/^data:image\/\w+;base64,/, ""),
+            "base64"
+          );
+
+          await writeFile(`./public/uploads/${name}`, fileBuffer);
+
+          organizer = await db.organizer.update({
+            data: {
+              avatar: name,
+            },
+            where: {
+              id: user?.organizer?.id,
+            },
+          });
+        }
+
+        return organizer;
+      } catch (err: any) {
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 });

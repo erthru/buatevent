@@ -24,6 +24,14 @@
             : menu.title.value
         }}
       </p>
+      <a
+        v-if="user?.role === 'ORGANIZER' && route.path === '/dashboard'"
+        :href="`${protocol}//${user?.organizer?.username}.${host}`"
+        target="_blank"
+        style="font-size: 14px; font-weight: 600; margin-top: 10px"
+      >
+        Lihat Halaman
+      </a>
       <ElBreadcrumb
         v-if="route.path !== '/dashboard'"
         separator="/"
@@ -63,6 +71,15 @@ import { Operation } from "@element-plus/icons-vue";
 const menu = useMenu();
 const { user } = useUser();
 const route = useRoute();
+const { public: prc } = useRuntimeConfig();
+
+const host = computed(() => {
+  return prc.baseUrl.replaceAll("http://", "").replace("https://", "");
+});
+
+const protocol = computed(() => {
+  return new URL(prc.baseUrl).protocol;
+});
 </script>
 
 <style scoped>

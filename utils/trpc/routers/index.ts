@@ -5,6 +5,7 @@ import { categoryRouter } from "./category";
 import { eventTicketRouter } from "./event-ticket";
 import { eventMemberRouter } from "./event-member";
 import { organizerRouter } from "./organizer";
+import { adminRouter } from "./admin";
 
 export const appRouter = router({
   user: userRouter,
@@ -13,6 +14,7 @@ export const appRouter = router({
   eventMember: eventMemberRouter,
   category: categoryRouter,
   organizer: organizerRouter,
+  admin: adminRouter,
 });
 
 // export type definition of API

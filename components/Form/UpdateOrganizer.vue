@@ -6,7 +6,7 @@
     label-position="top"
   >
     <ElFormItem
-      label="Nama"
+      label="Nama Organizer"
       prop="name"
       :rules="{
         required: true,
@@ -156,7 +156,7 @@ const submit = async (formInstance: FormInstance | undefined) => {
         avatarBase64 = await convertFileToBase64(state.selectedAvatar);
       }
 
-      await $client.user.updateOrganizer.mutate({
+      await $client.organizer.update.mutate({
         name: form.name,
         phone: form.phone,
         avatar: avatarBase64,

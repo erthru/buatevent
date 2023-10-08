@@ -2,6 +2,7 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import { Context } from "~/utils/trpc/context";
 import jwt from "jsonwebtoken";
+import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/rpc";
 
 const t = initTRPC.context<Context>().create(); /** * Unprotected procedure **/
 export const publicProcedure = t.procedure;
@@ -26,7 +27,13 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
       },
     });
   } catch (err: any) {
-    throw new TRPCError(err);
+    throw new TRPCError({
+      code:
+        (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+          ? err.code
+          : "INTERNAL_SERVER_ERROR",
+      message: err.message,
+    });
   }
 });
 

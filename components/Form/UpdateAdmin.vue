@@ -30,9 +30,7 @@
         disabled
       />
     </ElFormItem>
-    <ElButton type="primary" @click="submit(formRef)"
-      >Simpan</ElButton
-    >
+    <ElButton type="primary" @click="submit(formRef)">Simpan</ElButton>
   </ElForm>
 </template>
 
@@ -68,7 +66,7 @@ const submit = async (formInstance: FormInstance | undefined) => {
     try {
       state.isLoading = true;
 
-      await $client.user.updateAdmin.mutate({
+      await $client.admin.update.mutate({
         name: form.name,
       });
 

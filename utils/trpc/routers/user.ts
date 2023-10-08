@@ -3,9 +3,9 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { writeFile } from "fs/promises";
 import { formatPhoneNumber } from "~/utils/helpers";
 import { PrismaClient } from "@prisma/client";
+import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/rpc";
 
 const db = new PrismaClient();
 
@@ -26,7 +26,13 @@ export const userRouter = router({
 
       return user;
     } catch (err: any) {
-      throw new TRPCError(err);
+      throw new TRPCError({
+        code:
+          (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+            ? err.code
+            : "INTERNAL_SERVER_ERROR",
+        message: err.message,
+      });
     }
   }),
 
@@ -59,7 +65,7 @@ export const userRouter = router({
             data: {
               username,
               name,
-              avatar: "default.png",
+              avatar: "",
               phone: formatPhoneNumber(phone),
               balance: 0,
               userId: user.id,
@@ -71,7 +77,13 @@ export const userRouter = router({
 
         return organizer;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 
@@ -126,102 +138,13 @@ export const userRouter = router({
 
         return user;
       } catch (err: any) {
-        throw new TRPCError(err);
-      }
-    }),
-
-  updateOrganizer: protectedProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        avatar: z.string(),
-        phone: z.string(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        const { name, avatar, phone } = input;
-        const { id } = ctx;
-
-        const user = await db.user.findUnique({
-          include: {
-            organizer: true,
-          },
-          where: {
-            id,
-          },
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
         });
-
-        let organizer = await db.organizer.update({
-          data: {
-            name,
-            phone: formatPhoneNumber(phone),
-          },
-          where: {
-            id: user?.organizer?.id,
-          },
-        });
-
-        if (avatar) {
-          const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
-          const ext = avatar.split(";")[0].split("/")[1];
-          const name = `avatar-${unique}.${ext}`;
-
-          const fileBuffer = Buffer.from(
-            avatar.replace(/^data:image\/\w+;base64,/, ""),
-            "base64"
-          );
-
-          await writeFile(`./public/uploads/${name}`, fileBuffer);
-
-          organizer = await db.organizer.update({
-            data: {
-              avatar: name,
-            },
-            where: {
-              id: user?.organizer?.id,
-            },
-          });
-        }
-
-        return organizer;
-      } catch (err: any) {
-        throw new TRPCError(err);
-      }
-    }),
-
-  updateAdmin: protectedProcedure
-    .input(
-      z.object({
-        name: z.string(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        const { name } = input;
-        const { id } = ctx;
-
-        const user = await db.user.findUnique({
-          include: {
-            admin: true,
-          },
-          where: {
-            id,
-          },
-        });
-
-        let admin = await db.admin.update({
-          data: {
-            name,
-          },
-          where: {
-            id: user?.admin?.id,
-          },
-        });
-
-        return admin;
-      } catch (err: any) {
-        throw new TRPCError(err);
       }
     }),
 
@@ -249,7 +172,13 @@ export const userRouter = router({
 
         return user;
       } catch (err: any) {
-        throw new TRPCError(err);
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
       }
     }),
 });

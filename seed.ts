@@ -77,7 +77,7 @@ const main = async () => {
 
     await db.admin.create({
       data: {
-        name: "Buat Event Admin",
+        name: "Administrator",
         userId: userAdmin.id,
       },
     });

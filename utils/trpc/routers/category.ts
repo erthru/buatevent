@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { publicProcedure, router } from "..";
 import { PrismaClient } from "@prisma/client";
+import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/rpc";
 
 const db = new PrismaClient();
 
@@ -15,7 +16,13 @@ export const categoryRouter = router({
 
       return categories;
     } catch (err: any) {
-      throw new TRPCError(err);
+      throw new TRPCError({
+        code:
+          (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+            ? err.code
+            : "INTERNAL_SERVER_ERROR",
+        message: err.message,
+      });
     }
   }),
 });
