@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { publicProcedure, router } from "..";
+import { protectedProcedure, publicProcedure, router } from "..";
 import z from "zod";
 import { generateUniqueString } from "~/utils/helpers";
 import { sendEmail } from "~/utils/mailer";
@@ -9,6 +9,53 @@ const db = new PrismaClient();
 const { paymentApiUrl, paymentSecretKey } = useRuntimeConfig();
 
 export const eventMemberRouter = router({
+  getAllByEventId: protectedProcedure
+    .input(
+      z.object({
+        eventId: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      try {
+        const { eventId } = input;
+        const { id } = ctx;
+
+        const [organizer, event] = await Promise.all([
+          db.organizer.findUnique({
+            where: {
+              userId: id,
+            },
+          }),
+          db.event.findUnique({
+            where: {
+              id: eventId,
+            },
+          }),
+        ]);
+
+        if (organizer?.id !== event?.organizerId) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "unauthorized",
+          });
+        }
+
+        const eventMembers = await db.eventMember.findMany({
+          include: {
+            eventTicket: true,
+          },
+          where: {
+            eventTicket: {
+              eventId,
+            },
+          },
+        });
+
+        return eventMembers;
+      } catch (err: any) {
+        throw new TRPCError(err);
+      }
+    }),
   buyTicket: publicProcedure
     .input(
       z.object({

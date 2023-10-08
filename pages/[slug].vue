@@ -45,19 +45,12 @@
                 : data?.type.toLowerCase()
             }}
           </p>
-          <ElTag
-            v-if="getExpired(new Date(data?.endAt!!))"
-            size="small"
-            type="danger"
-            style="margin-left: 10px"
-            >Expired</ElTag
-          >
         </div>
         <div style="display: flex; align-items: center; margin-top: 12px">
           <ElIcon style="color: #303133">
             <Clock />
           </ElIcon>
-          <p style="margin-left: 8px; color: #">
+          <p style="margin-left: 8px; color: #303133">
             {{ new Date(data?.startAt!!).toLocaleDateString("id") }}
             {{ new Date(data?.startAt!!).toLocaleTimeString("id") }} -
             {{ new Date(data?.endAt!!).toLocaleDateString("id") }}

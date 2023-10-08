@@ -40,24 +40,25 @@ export const eventRouter = router({
         const { id: userId } = ctx;
         const { id } = input;
 
-        const organizer = await db.organizer.findUnique({
-          where: {
-            userId,
-          },
-        });
-
-        const event = await db.event.findUnique({
-          include: {
-            _count: {
-              select: {
-                eventTickets: true,
+        const [organizer, event] = await Promise.all([
+          db.organizer.findUnique({
+            where: {
+              userId,
+            },
+          }),
+          db.event.findUnique({
+            include: {
+              _count: {
+                select: {
+                  eventTickets: true,
+                },
               },
             },
-          },
-          where: {
-            id,
-          },
-        });
+            where: {
+              id,
+            },
+          }),
+        ]);
 
         if (event?.organizerId !== organizer?.id) {
           throw new TRPCError({
@@ -277,17 +278,18 @@ export const eventRouter = router({
 
         const { id: userId } = ctx;
 
-        const organizer = await db.organizer.findUnique({
-          where: {
-            userId,
-          },
-        });
-
-        let event = await db.event.findUnique({
-          where: {
-            id,
-          },
-        });
+        let [organizer, event] = await Promise.all([
+          db.organizer.findUnique({
+            where: {
+              userId,
+            },
+          }),
+          db.event.findUnique({
+            where: {
+              id,
+            },
+          }),
+        ]);
 
         if (event?.organizerId !== organizer?.id) {
           throw new TRPCError({
@@ -347,24 +349,25 @@ export const eventRouter = router({
         const { id: userId } = ctx;
         const { id } = input;
 
-        const organizer = await db.organizer.findUnique({
-          where: {
-            userId,
-          },
-        });
-
-        const event = await db.event.findUnique({
-          include: {
-            _count: {
-              select: {
-                eventTickets: true,
+        const [organizer, event] = await Promise.all([
+          db.organizer.findUnique({
+            where: {
+              userId,
+            },
+          }),
+          db.event.findUnique({
+            include: {
+              _count: {
+                select: {
+                  eventTickets: true,
+                },
               },
             },
-          },
-          where: {
-            id,
-          },
-        });
+            where: {
+              id,
+            },
+          }),
+        ]);
 
         if (event?.organizerId !== organizer?.id) {
           throw new TRPCError({
