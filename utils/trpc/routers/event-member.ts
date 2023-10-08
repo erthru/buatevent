@@ -163,7 +163,7 @@ export const eventMemberRouter = router({
                 ).toString("base64")}`,
               },
               body: {
-                external_id: `event-member-${eventMember.id}`,
+                external_id: `invoice-event-member-${eventMember.id}`,
                 amount: eventTicket.price,
                 customer: {
                   given_names: name,

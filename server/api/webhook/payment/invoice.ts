@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
       paid_amount: paidAmount,
     } = await readBody(event);
 
-    const eventMemberId = Number(externalId.replaceAll("event-member-", ""));
+    const eventMemberId = Number(externalId.replaceAll("invoice-event-member-", ""));
 
     if (eventMemberId) {
       const eventMember = await db.eventMember.update({
