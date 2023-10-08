@@ -16,19 +16,19 @@
       }"
     >
       <ElInput v-model="form.title" placeholder="Masukkan judul" />
+      <p style="font-size: 12px; margin-bottom: -10px; margin-top: -4px">
+        *Mengganti judul akan mengubah alamat URL pada event ini, alamat URL
+        saat ini adalah:
+        <a
+          :href="`${protocol}//${user?.organizer?.username}.${host}/${props.event.slug}`"
+          target="_blank"
+          style="font-weight: 500"
+          >{{
+            `${protocol}//${user?.organizer?.username}.${host}/${props.event.slug}`
+          }}</a
+        >
+      </p>
     </ElFormItem>
-    <p style="font-size: 12px; margin-top: -14px; margin-bottom: 16px">
-      *Mengganti judul akan mengubah alamat URL pada event ini, alamat URL saat
-      ini adalah:
-      <a
-        :href="`${protocol}//${user?.organizer?.username}.${host}/${props.event.slug}`"
-        target="_blank"
-        style="font-weight: 500"
-        >{{
-          `${protocol}//${user?.organizer?.username}.${host}/${props.event.slug}`
-        }}</a
-      >
-    </p>
     <ElFormItem
       label="Isi Postingan"
       prop="body"

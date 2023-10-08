@@ -68,7 +68,7 @@
               cursor: pointer;
               color: var(--el-color-primary);
             "
-            @click="null"
+            @click="showWithdrawModal"
           >
             Tarik Saldo
           </p>
@@ -95,7 +95,6 @@
             :href="prc.paymentDashboardUrl"
             target="_blank"
             style="font-size: 14px; font-weight: 500"
-            @click="null"
           >
             Cek Payment Dashboard
           </a>
@@ -106,15 +105,51 @@
       </div>
     </ElCard>
   </div>
+  <ClientOnly>
+    <ElDialog
+      v-model="state.isWithdrawModalShown"
+      title="Tarik Saldo"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :width="breakpoint === 'sm' ? '90%' : '460px'"
+    >
+      <FormWithdraw
+        :key="state.withdrawFormKey"
+        ref="formWithdraw"
+        :balance="user?.organizer?.balance || 0"
+        @update:loading="(loading) => (state.isWithdawing = loading)"
+        @withdrew="onWithdrew"
+      />
+      <template #footer>
+        <div>
+          <ElButton
+            v-if="!state.isWithdawing"
+            @click="state.isWithdrawModalShown = false"
+            >Tutup</ElButton
+          >
+          <ElButton
+            v-if="!state.isWithdawing"
+            type="primary"
+            @click="formWithdraw?.submit"
+            >Simpan</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { Calendar, Money } from "@element-plus/icons-vue";
+import FormWithdraw from "~/components/Form/Withdraw.vue";
 
 const { public: prc } = useRuntimeConfig();
 const { setError } = useCustomError();
 const { user } = useUser();
 const { $client } = useNuxtApp();
+const formWithdraw = ref<typeof FormWithdraw>();
+const breakpoint = useBreakpoint();
 
 useHead({
   title: `Dashboard | ${prc.appTitle}`,
@@ -125,7 +160,17 @@ definePageMeta({
   layout: "dashboard",
 });
 
-const { data, pending: isLoading } = useLazyAsyncData("dashboard", async () => {
+const state = reactive({
+  isWithdrawModalShown: false,
+  isWithdawing: false,
+  withdrawFormKey: `${new Date().getTime()}-wfk`,
+});
+
+const {
+  data,
+  pending: isLoading,
+  refresh,
+} = useLazyAsyncData("dashboard", async () => {
   try {
     let eventsTotal = 0;
     let organizersTotal = 0;
@@ -155,6 +200,16 @@ const { data, pending: isLoading } = useLazyAsyncData("dashboard", async () => {
     setError(err?.data?.httpStatus || 500, err.message);
   }
 });
+
+const showWithdrawModal = () => {
+  state.withdrawFormKey = `${new Date().getTime()}-wfk`;
+  state.isWithdrawModalShown = true;
+};
+
+const onWithdrew = () => {
+  state.isWithdrawModalShown = false;
+  refresh();
+};
 </script>
 
 <style scoped>

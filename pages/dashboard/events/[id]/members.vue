@@ -260,6 +260,7 @@ const showSendTicketModal = (eventMember: Prisma.EventMemberGetPayload<{}>) => {
 const showSendInvoiceModal = (
   eventMember: Prisma.EventMemberGetPayload<{}>
 ) => {
+  state.updateEventMemberStatusFormKey = `${new Date().getTime()}-uemsfk`;
   state.selectedEventMember = eventMember;
   state.isSendInvoiceModalShown = true;
 };
@@ -267,6 +268,7 @@ const showSendInvoiceModal = (
 const showUpdateStatusModal = (
   eventMember: Prisma.EventMemberGetPayload<{}>
 ) => {
+  state.updateEventMemberStatusFormKey = `${new Date().getTime()}-uemsfk`;
   state.selectedEventMember = eventMember;
   state.isUpdateStatusModalShown = true;
 };
