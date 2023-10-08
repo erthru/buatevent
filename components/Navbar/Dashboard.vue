@@ -13,7 +13,7 @@
       <Operation />
     </ElIcon>
     <div>
-      <p class="title" style="font-weight: 600; color: #303133">
+      <p class="title" style="font-weight: 600; color: #303133; flex: 1 1 0%">
         {{
           route.path === "/dashboard"
             ? `Hai, ${
@@ -45,7 +45,14 @@
           ? `/uploads/${user?.organizer?.avatar || 'default.png'}`
           : '/uploads/default.png'
       "
-      style="margin-left: auto; object-fit: cover"
+      style="
+        margin-left: auto;
+        object-fit: cover;
+        min-width: 40px;
+        min-height: 40px;
+        max-width: 40px;
+        max-height: 40px;
+      "
     />
   </header>
 </template>
