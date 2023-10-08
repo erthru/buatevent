@@ -61,6 +61,7 @@ export const userRouter = router({
               name,
               avatar: "default.png",
               phone: formatPhoneNumber(phone),
+              balance: 0,
               userId: user.id,
             },
           });

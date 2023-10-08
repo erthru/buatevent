@@ -51,6 +51,7 @@ model Organizer {
     name      String
     avatar    String
     phone     String
+    balance   Int
     createdAt DateTime  @default(now())
     updatedAt DateTime? @updatedAt
     userId    Int       @unique

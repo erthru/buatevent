@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { sendEmail } from "~/utils/mailer";
 
 const { paymentWebhookKey } = useRuntimeConfig();
 const db = new PrismaClient();
@@ -21,11 +22,22 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const { external_id: externalId, status } = await readBody(event);
+    const {
+      external_id: externalId,
+      status,
+      paid_amount: paidAmount,
+    } = await readBody(event);
     const eventMemberId = Number(externalId.replaceAll("event-member-", ""));
 
     if (eventMemberId) {
-      await db.eventMember.update({
+      const eventMember = await db.eventMember.update({
+        include: {
+          eventTicket: {
+            include: {
+              event: true,
+            },
+          },
+        },
         data: {
           status,
         },
@@ -33,6 +45,36 @@ export default defineEventHandler(async (event) => {
           id: eventMemberId,
         },
       });
+
+      if (status === "PAID" && eventMember) {
+        const organizer = await db.organizer.findUnique({
+          where: {
+            id: eventMember.eventTicket.event.organizerId,
+          },
+        });
+
+        const html = `
+            <p>Terima kasih ${eventMember.name} telah menggunakan platform Buat Event, berikut detail tiket anda:</p>
+            <p>Acara: ${eventMember.eventTicket?.event.title}</p>
+            <p>Jenis Tiket: ${eventMember.eventTicket?.name}</p>
+            <p>Kode Validasi: ${eventMember.validationCode}</p>
+          `;
+
+        await sendEmail(
+          eventMember.email,
+          `Detail Ticket ${eventMember.eventTicket?.name} dari ${eventMember.eventTicket?.event.title} | Buat Event`,
+          html
+        );
+
+        await db.organizer.update({
+          data: {
+            balance: organizer?.balance + paidAmount,
+          },
+          where: {
+            id: organizer?.id,
+          },
+        });
+      }
     }
 
     return {
