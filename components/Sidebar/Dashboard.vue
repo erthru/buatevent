@@ -186,6 +186,7 @@ import {
   Plus,
   Phone,
   Message,
+User,
 } from "@element-plus/icons-vue";
 
 const route = useRoute();
@@ -205,6 +206,16 @@ const sidebarItems = computed(() => {
       isActive: route.path === "/dashboard",
       icon: House,
       isShown: true,
+      onClick: () => {
+        onItemClick();
+      },
+    },
+    {
+      title: "Organizer",
+      to: "/dashboard/organizers",
+      isActive: route.path.includes("/dashboard/organizers"),
+      icon: User,
+      isShown: user.value?.role === "ADMIN",
       onClick: () => {
         onItemClick();
       },
