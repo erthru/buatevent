@@ -3,10 +3,12 @@ import { protectedProcedure, publicProcedure, router } from "..";
 import z from "zod";
 import { PrismaClient } from "@prisma/client";
 import { writeFile } from "fs/promises";
-import { formatPhoneNumber } from "~/utils/helpers";
+import { formatPhoneNumber, generateUniqueString } from "~/utils/helpers";
 import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/rpc";
+import bcrypt from "bcrypt";
 
 const db = new PrismaClient();
+const { paymentApiUrl, paymentSecretKey } = useRuntimeConfig();
 
 export const organizerRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -56,6 +58,81 @@ export const organizerRouter = router({
         });
 
         return organizer;
+      } catch (err: any) {
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
+
+  withdraw: protectedProcedure
+    .input(
+      z.object({
+        bank: z.string(),
+        accountHolder: z.string(),
+        accountNumber: z.string(),
+        amount: z.number(),
+        password: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { id } = ctx;
+        const { bank, accountHolder, accountNumber, amount, password } = input;
+
+        const user = await db.user.findUnique({
+          include: {
+            organizer: true,
+          },
+          where: {
+            id,
+          },
+        });
+
+        const isPasswordValid = await bcrypt.compare(
+          password,
+          user?.password!!
+        );
+
+        if (!isPasswordValid) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "password invalid",
+          });
+        }
+
+        await $fetch(`${paymentApiUrl}/v2/payouts`, {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${Buffer.from(
+              `${paymentSecretKey}:`
+            ).toString("base64")}`,
+            "idempotency-key": generateUniqueString(),
+          },
+          body: {
+            reference_id: `withdraw-organizer-${user?.organizer?.id}`,
+            channel_code: bank,
+            channel_properties: {
+              account_holder_name: accountHolder,
+              account_number: accountNumber,
+            },
+            amount,
+            currency: "IDR",
+          },
+        });
+
+        await db.organizer.update({
+          data: {
+            balance: user?.organizer?.balance!! - amount - 6500,
+          },
+          where: {
+            id: user?.organizer?.id,
+          },
+        });
       } catch (err: any) {
         throw new TRPCError({
           code:

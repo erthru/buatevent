@@ -85,6 +85,9 @@
         placeholder="Masukkan Password"
       />
     </ElFormItem>
+    <ElAlert type="warning" effect="dark" :closable="false">
+      Anda akan dikenakan biaya transfer sebesar Rp 6,500
+    </ElAlert>
   </ElForm>
 </template>
 
@@ -106,6 +109,7 @@ const props = defineProps({
 const formRef = ref<FormInstance>();
 const { $client } = useNuxtApp();
 const emit = defineEmits(["update:loading", "withdrew"]);
+const { fetchUser } = useUser();
 
 type Form = {
   bank: string;
@@ -129,19 +133,19 @@ const state = reactive({
 
 const bankOptions = [
   {
-    value: "BCA",
+    value: "ID_BCA",
     label: "Bank Central Asia",
   },
   {
-    value: "BNI",
+    value: "ID_BNI",
     label: "Bank Negara Indonesia",
   },
   {
-    value: "MANDIRI",
-    label: "MANDIRI",
+    value: "ID_MANDIRI",
+    label: "Mandiri",
   },
   {
-    value: "BRI",
+    value: "ID_BRI",
     label: "Bank Rakyat Indonesia",
   },
 ];
@@ -155,9 +159,9 @@ const checkAmount = (rule: any, value: any, callback: any) => {
     return callback(new Error("amount must be greater or equal than 10000"));
   }
 
-  if (Number(value) > props.balance) {
+  if (Number(value) > props.balance - 6500) {
     return callback(
-      new Error(`amount must be less or equal than ${props.balance}`)
+      new Error(`amount must be less or equal than ${props.balance - 6500}`)
     );
   }
 
@@ -175,12 +179,21 @@ const _submit = async (formInstance: FormInstance | undefined) => {
     try {
       state.isLoading = true;
 
-      // await $client.eventMember.buyTicket.mutate({
-      //   name: form.name,
-      //   phone: form.phone,
-      //   email: form.email,
-      //   eventTicketId: props.eventTicketId,
-      // });
+      await $client.organizer.withdraw.mutate({
+        bank: form.bank,
+        accountHolder: form.accountHolder,
+        accountNumber: form.accountNumber,
+        amount: Number(form.amount),
+        password: form.password,
+      });
+
+      await fetchUser();
+
+      ElNotification({
+        title: "Sukses",
+        message: "Proses penarikan saldo sedang diproses",
+        type: "success",
+      });
 
       emit("withdrew");
     } catch (err: any) {
