@@ -1,75 +1,14 @@
-# Nuxt 3 Minimal Starter
+# Buat Event
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+### How to Setup:
 
-## Setup
+1. setup .env
+2. run `npm ci`
+3. run `npm run db:migrate` to run the databse migration
+4. run `npm run db:seed` to run database seeder
+5. register payment invoice webhook
+6. run `npm run dev` to test on local
 
-Make sure to install the dependencies:
+### Webhook List:
 
-```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+1. `/api/webhook/payment/invoice`, register the url on xendit webhook invoice (invoice paid) section. you have to check "Also notify my application when an invoice has expired" and uncheck "Also notify my application when a payment has been received after expiry" on that section
