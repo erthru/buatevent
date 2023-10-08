@@ -40,7 +40,14 @@ export const eventMemberRouter = router({
           db.eventMember.count({
             where: {
               eventTicketId: eventTicket?.id,
-              status: "PAID",
+              OR: [
+                {
+                  status: "PAID",
+                },
+                {
+                  status: "UNPAID",
+                },
+              ],
             },
           }),
         ]);
@@ -107,7 +114,7 @@ export const eventMemberRouter = router({
                   email,
                   mobile_number: `+62${phone}`,
                 },
-                invoice_duration: 84600,
+                invoice_duration: 1800,
                 currency: "IDR",
                 items: [
                   {
@@ -164,12 +171,7 @@ export const eventMemberRouter = router({
 
         return eventMember;
       } catch (err: any) {
-        throw new TRPCError({
-          code: err.message.includes("member")
-            ? "FORBIDDEN"
-            : "INTERNAL_SERVER_ERROR",
-          message: err.message,
-        });
+        throw new TRPCError(err);
       }
     }),
 });

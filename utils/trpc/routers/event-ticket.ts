@@ -44,13 +44,7 @@ export const eventTicketRouter = router({
 
         return eventTickets;
       } catch (err: any) {
-        throw new TRPCError({
-          code:
-            err.message === "unauthorized"
-              ? "UNAUTHORIZED"
-              : "INTERNAL_SERVER_ERROR",
-          message: err.message,
-        });
+        throw new TRPCError(err);
       }
     }),
 
@@ -74,16 +68,20 @@ export const eventTicketRouter = router({
         const paidEventMembers = await db.eventMember.count({
           where: {
             eventTicketId: eventTicket?.id,
-            status: "PAID",
+            OR: [
+              {
+                status: "PAID",
+              },
+              {
+                status: "UNPAID",
+              },
+            ],
           },
         });
 
         return eventTicket?.quota!! - paidEventMembers;
       } catch (err: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: err.message,
-        });
+        throw new TRPCError(err);
       }
     }),
 
@@ -133,13 +131,7 @@ export const eventTicketRouter = router({
 
         return eventTicket;
       } catch (err: any) {
-        throw new TRPCError({
-          code:
-            err.message === "unauthorized"
-              ? "UNAUTHORIZED"
-              : "INTERNAL_SERVER_ERROR",
-          message: err.message,
-        });
+        throw new TRPCError(err);
       }
     }),
 
@@ -199,13 +191,7 @@ export const eventTicketRouter = router({
 
         return eventTicket;
       } catch (err: any) {
-        throw new TRPCError({
-          code:
-            err.message === "unauthorized"
-              ? "UNAUTHORIZED"
-              : "INTERNAL_SERVER_ERROR",
-          message: err.message,
-        });
+        throw new TRPCError(err);
       }
     }),
 
@@ -260,15 +246,7 @@ export const eventTicketRouter = router({
           },
         });
       } catch (err: any) {
-        throw new TRPCError({
-          code:
-            err.message === "unauthorized"
-              ? "UNAUTHORIZED"
-              : err.message.includes("cannot delete")
-              ? "FORBIDDEN"
-              : "INTERNAL_SERVER_ERROR",
-          message: err.message,
-        });
+        throw new TRPCError(err);
       }
     }),
 });

@@ -22,10 +22,7 @@ export const organizerRouter = router({
 
         return organizer;
       } catch (err: any) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: err.message,
-        });
+        throw new TRPCError(err);
       }
     }),
 });

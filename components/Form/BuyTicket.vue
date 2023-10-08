@@ -93,7 +93,7 @@ const _submit = async (formInstance: FormInstance | undefined) => {
     try {
       state.isLoading = true;
 
-      await $client.eventMember.buyTicket.mutate({
+      const eventMember = await $client.eventMember.buyTicket.mutate({
         name: form.name,
         phone: form.phone,
         email: form.email,
@@ -113,6 +113,8 @@ const _submit = async (formInstance: FormInstance | undefined) => {
           message: "Silahkan cek email untuk melanjutkan pembayaran anda",
           type: "success",
         });
+
+        window.open(eventMember.invoiceLink, "_blank")?.focus();
       }
 
       emit("bought");

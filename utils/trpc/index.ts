@@ -26,10 +26,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
       },
     });
   } catch (err: any) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "token invalid",
-    });
+    throw new TRPCError(err);
   }
 });
 
