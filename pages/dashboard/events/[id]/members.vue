@@ -23,15 +23,25 @@
         </template>
       </ElTableColumn>
       <ElTableColumn prop="name" label="Nama" width="150" />
-      <ElTableColumn prop="phone" label="No. HP" width="100" />
+      <ElTableColumn prop="phone" label="No. HP" width="150" />
       <ElTableColumn prop="email" label="email" width="200" />
       <ElTableColumn prop="status" label="status" width="150">
         <template #default="{ row }">
-          <p>
+          <p
+            style="font-weight: 500"
+            :style="{
+              color:
+                row.status === 'PAID'
+                  ? '#529b2e'
+                  : row.status === 'UNPAID'
+                  ? '#b88230'
+                  : '#c45656',
+            }"
+          >
             {{
               row.status === "PAID"
                 ? "Telah dibayar"
-                : row.status === "PENDING"
+                : row.status === "UNPAID"
                 ? "Menunggu Pembayaran"
                 : "Expired"
             }}
@@ -47,7 +57,7 @@
         <template #default="{ row }">
           <div style="display: flex">
             <ElButton
-              v-if="row.status === 'PENDING'"
+              v-if="row.status === 'UNPAID'"
               type="warning"
               @click="showSendInvoiceModal(row)"
               >Kirim Invoice</ElButton
@@ -58,7 +68,9 @@
               @click="showSendTicketModal(row)"
               >Kirim Tiket</ElButton
             >
-            <ElButton type="warning" @click="null">Perbarui Status</ElButton>
+            <ElButton type="warning" @click="showUpdateStatusModal(row)"
+              >Perbarui Status</ElButton
+            >
           </div>
         </template>
       </ElTableColumn>
@@ -96,7 +108,7 @@
           >
           <ElButton
             type="primary"
-            @click="null"
+            @click="sendTicket"
             :disabled="state.isSendingTicket"
             v-loading="state.isSendingTicket"
             >Kirim</ElButton
@@ -125,9 +137,40 @@
           >
           <ElButton
             type="primary"
-            @click="null"
+            @click="sendInvoice"
             :disabled="state.isSendingInvoice"
             v-loading="state.isSendingInvoice"
+            >Kirim</ElButton
+          >
+        </div>
+      </template>
+    </ElDialog>
+    <ElDialog
+      v-model="state.isUpdateStatusModalShown"
+      title="Perbarui Status"
+      :show-close="false"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :width="breakpoint === 'sm' ? '90%' : '460px'"
+    >
+      <FormUpdateEventMemberStatus
+        :key="state.updateEventMemberStatusFormKey"
+        ref="formUpdateEventMemberStatus"
+        :event-member="state.selectedEventMember"
+        @update:loading="(loading) => (state.isUpdatingStatus = loading)"
+        @updated="onStatusUpdated"
+      />
+      <template #footer>
+        <div>
+          <ElButton
+            v-if="!state.isUpdatingStatus"
+            @click="state.isUpdateStatusModalShown = false"
+            >Tutup</ElButton
+          >
+          <ElButton
+            v-if="!state.isUpdatingStatus"
+            type="primary"
+            @click="formUpdateEventMemberStatus?.submit"
             >Kirim</ElButton
           >
         </div>
@@ -138,6 +181,7 @@
 
 <script lang="ts" setup>
 import { Prisma } from "@prisma/client";
+import UpdateEventMemberStatus from "~/components/Form/UpdateEventMemberStatus.vue";
 
 const { public: prc } = useRuntimeConfig();
 const menu = useMenu();
@@ -147,6 +191,7 @@ const { setError } = useCustomError();
 const { $client } = useNuxtApp();
 const router = useRouter();
 const breakpoint = useBreakpoint();
+const formUpdateEventMemberStatus = ref<typeof UpdateEventMemberStatus>();
 
 useHead({
   title: `Kelola Anggota Event | ${prc.appTitle}`,
@@ -166,6 +211,9 @@ const state = reactive({
   isSendingTicket: false,
   isSendInvoiceModalShown: false,
   isSendingInvoice: false,
+  isUpdateStatusModalShown: false,
+  isUpdatingStatus: false,
+  updateEventMemberStatusFormKey: `${new Date().getTime()}-uemsfk`,
 });
 
 const {
@@ -214,6 +262,72 @@ const showSendInvoiceModal = (
 ) => {
   state.selectedEventMember = eventMember;
   state.isSendInvoiceModalShown = true;
+};
+
+const showUpdateStatusModal = (
+  eventMember: Prisma.EventMemberGetPayload<{}>
+) => {
+  state.selectedEventMember = eventMember;
+  state.isUpdateStatusModalShown = true;
+};
+
+const sendTicket = async () => {
+  try {
+    state.isSendingTicket = true;
+
+    await $client.eventMember.sendTicket.mutate({
+      id: state.selectedEventMember?.id!!,
+    });
+
+    ElNotification({
+      title: "Sukses",
+      message: "Tiket berhasil dikirim",
+      type: "success",
+    });
+
+    state.isSendTicketModalShown = false;
+    refresh();
+  } catch (err: any) {
+    ElNotification({
+      title: "Error",
+      message: err.message,
+      type: "error",
+    });
+  } finally {
+    state.isSendingTicket = false;
+  }
+};
+
+const sendInvoice = async () => {
+  try {
+    state.isSendingInvoice = true;
+
+    await $client.eventMember.sendInvoice.mutate({
+      id: state.selectedEventMember?.id!!,
+    });
+
+    ElNotification({
+      title: "Sukses",
+      message: "Invoice berhasil dikirim",
+      type: "success",
+    });
+
+    state.isSendInvoiceModalShown = false;
+    refresh();
+  } catch (err: any) {
+    ElNotification({
+      title: "Error",
+      message: err.message,
+      type: "error",
+    });
+  } finally {
+    state.isSendingInvoice = false;
+  }
+};
+
+const onStatusUpdated = () => {
+  state.isUpdateStatusModalShown = false;
+  refresh();
 };
 
 const eventMembers = computed(() => {

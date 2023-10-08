@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { protectedProcedure, publicProcedure, router } from "..";
 import z from "zod";
 import { generateUniqueString } from "~/utils/helpers";
-import { sendEmail } from "~/utils/mailer";
+import { sendInvoice, sendTicket } from "~/utils/mailer";
 import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
@@ -56,6 +56,7 @@ export const eventMemberRouter = router({
         throw new TRPCError(err);
       }
     }),
+
   buyTicket: publicProcedure
     .input(
       z.object({
@@ -187,33 +188,204 @@ export const eventMemberRouter = router({
         }
 
         if (eventTicket?.price) {
-          const html = `
-            <p>Terima kasih ${name} telah menggunakan platform Buat Event, berikut detail pembayaran untuk tiket anda:</p>
-            <p>Acara: ${eventTicket.event.title}</p>
-            <p>Jenis Tiket: ${eventTicket.name}</p>
-            <p>Harga: Rp ${eventTicket.price.toLocaleString()}</p>
-            <p>Silahkan klik link berikut untuk masuk ke menu pembayaran: <a href="${
-              eventMember.invoiceLink
-            }">${eventMember.invoiceLink}</a></p>
-          `;
-
-          await sendEmail(
+          await sendInvoice(
+            name,
             email,
-            `Pembayaran untuk Ticket ${eventTicket.name} dari ${eventTicket.event.title} | Buat Event`,
-            html
+            eventTicket.event.title,
+            eventTicket.name,
+            eventTicket.price,
+            eventMember.invoiceLink
           );
         } else {
-          const html = `
-            <p>Terima kasih ${name} telah menggunakan platform Buat Event, berikut detail tiket anda:</p>
-            <p>Acara: ${eventTicket?.event.title}</p>
-            <p>Jenis Tiket: ${eventTicket?.name}</p>
-            <p>Kode Validasi: ${eventMember.validationCode}</p>
-          `;
-
-          await sendEmail(
+          await sendTicket(
+            name,
             email,
-            `Detail Ticket ${eventTicket?.name} dari ${eventTicket?.event.title} | Buat Event`,
-            html
+            eventTicket?.event.title!!,
+            eventTicket?.name!!,
+            eventMember.validationCode
+          );
+        }
+
+        return eventMember;
+      } catch (err: any) {
+        throw new TRPCError(err);
+      }
+    }),
+
+  sendInvoice: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { id: userId } = ctx;
+        const { id } = input;
+
+        const [organizer, eventMember] = await Promise.all([
+          db.organizer.findUnique({
+            where: {
+              userId,
+            },
+          }),
+          db.eventMember.findUnique({
+            include: {
+              eventTicket: {
+                include: {
+                  event: true,
+                },
+              },
+            },
+            where: {
+              id,
+            },
+          }),
+        ]);
+
+        if (organizer?.id !== eventMember?.eventTicket.event.organizerId) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "unauthorized",
+          });
+        }
+
+        await sendInvoice(
+          eventMember?.name!!,
+          eventMember?.email!!,
+          eventMember?.eventTicket.event.title!!,
+          eventMember?.eventTicket.name!!,
+          eventMember?.eventTicket.price!!,
+          eventMember?.invoiceLink!!
+        );
+      } catch (err: any) {
+        throw new TRPCError(err);
+      }
+    }),
+
+  sendTicket: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { id: userId } = ctx;
+        const { id } = input;
+
+        const [organizer, eventMember] = await Promise.all([
+          db.organizer.findUnique({
+            where: {
+              userId,
+            },
+          }),
+          db.eventMember.findUnique({
+            include: {
+              eventTicket: {
+                include: {
+                  event: true,
+                },
+              },
+            },
+            where: {
+              id,
+            },
+          }),
+        ]);
+
+        if (organizer?.id !== eventMember?.eventTicket.event.organizerId) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "unauthorized",
+          });
+        }
+
+        await sendTicket(
+          eventMember?.name!!,
+          eventMember?.email!!,
+          eventMember?.eventTicket.event.title!!,
+          eventMember?.eventTicket.name!!,
+          eventMember?.validationCode!!
+        );
+      } catch (err: any) {
+        throw new TRPCError(err);
+      }
+    }),
+
+  updateStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        status: z.enum(["PAID", "UNPAID", "EXPIRED"]),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const { id: userId } = ctx;
+        const { id, status } = input;
+
+        let [organizer, eventMember] = await Promise.all([
+          db.organizer.findUnique({
+            where: {
+              userId,
+            },
+          }),
+          db.eventMember.findUnique({
+            include: {
+              eventTicket: {
+                include: {
+                  event: true,
+                },
+              },
+            },
+            where: {
+              id,
+            },
+          }),
+        ]);
+
+        if (organizer?.id !== eventMember?.eventTicket.event.organizerId) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "unauthorized",
+          });
+        }
+
+        eventMember = await db.eventMember.update({
+          include: {
+            eventTicket: {
+              include: {
+                event: true,
+              },
+            },
+          },
+          data: {
+            status,
+          },
+          where: {
+            id,
+          },
+        });
+
+        if (status === "PAID") {
+          await sendTicket(
+            eventMember.name,
+            eventMember.email,
+            eventMember.eventTicket.event.title,
+            eventMember.eventTicket.name,
+            eventMember.validationCode
+          );
+        }
+
+        if (status === "UNPAID") {
+          await sendInvoice(
+            eventMember.name,
+            eventMember.email,
+            eventMember.eventTicket.event.title,
+            eventMember.eventTicket.name,
+            eventMember.eventTicket.price,
+            eventMember.invoiceLink
           );
         }
 

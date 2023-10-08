@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { sendEmail } from "~/utils/mailer";
+import { sendTicket } from "~/utils/mailer";
 
 const { paymentWebhookKey } = useRuntimeConfig();
 const db = new PrismaClient();
@@ -27,6 +27,7 @@ export default defineEventHandler(async (event) => {
       status,
       paid_amount: paidAmount,
     } = await readBody(event);
+
     const eventMemberId = Number(externalId.replaceAll("event-member-", ""));
 
     if (eventMemberId) {
@@ -53,17 +54,12 @@ export default defineEventHandler(async (event) => {
           },
         });
 
-        const html = `
-            <p>Terima kasih ${eventMember.name} telah menggunakan platform Buat Event, berikut detail tiket anda:</p>
-            <p>Acara: ${eventMember.eventTicket?.event.title}</p>
-            <p>Jenis Tiket: ${eventMember.eventTicket?.name}</p>
-            <p>Kode Validasi: ${eventMember.validationCode}</p>
-          `;
-
-        await sendEmail(
+        await sendTicket(
+          eventMember.name,
           eventMember.email,
-          `Detail Ticket ${eventMember.eventTicket?.name} dari ${eventMember.eventTicket?.event.title} | Buat Event`,
-          html
+          eventMember.eventTicket.event.title,
+          eventMember.eventTicket.name,
+          eventMember.validationCode
         );
 
         await db.organizer.update({
