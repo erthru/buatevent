@@ -340,6 +340,7 @@ const showBuyTicketModal = () => {
 
 const onBought = () => {
   state.isBuyTicketModalShown = false;
+  checkTicketQuota();
 };
 
 watch(
