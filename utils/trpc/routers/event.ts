@@ -13,10 +13,11 @@ export const eventRouter = router({
     .input(
       z.object({
         q: z.string(),
+        categoryId: z.any(),
       })
     )
     .query(async ({ input }) => {
-      const { q } = input;
+      const { q, categoryId } = input;
 
       try {
         const events = await db.event.findMany({
@@ -35,6 +36,7 @@ export const eventRouter = router({
               contains: q,
               mode: "insensitive",
             },
+            categoryId,
           },
           orderBy: {
             id: "desc",
