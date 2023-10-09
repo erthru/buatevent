@@ -9,37 +9,49 @@ import { TRPC_ERROR_CODES_BY_KEY } from "@trpc/server/rpc";
 const db = new PrismaClient();
 
 export const eventRouter = router({
-  getAllRelevanPublished: publicProcedure.query(async () => {
-    try {
-      const events = await db.event.findMany({
-        include: {
-          category: true,
-          organizer: true,
-          _count: {
-            select: {
-              eventTickets: true,
+  getAllPublished: publicProcedure
+    .input(
+      z.object({
+        q: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { q } = input;
+
+      try {
+        const events = await db.event.findMany({
+          include: {
+            category: true,
+            organizer: true,
+            _count: {
+              select: {
+                eventTickets: true,
+              },
             },
           },
-        },
-        where: {
-          isPublished: true,
-        },
-        orderBy: {
-          id: "desc",
-        },
-      });
+          where: {
+            isPublished: true,
+            title: {
+              contains: q,
+              mode: "insensitive",
+            },
+          },
+          orderBy: {
+            id: "desc",
+          },
+        });
 
-      return events.filter((event) => event._count.eventTickets > 0);
-    } catch (err: any) {
-      throw new TRPCError({
-        code:
-          (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
-            ? err.code
-            : "INTERNAL_SERVER_ERROR",
-        message: err.message,
-      });
-    }
-  }),
+        return events.filter((event) => event._count.eventTickets > 0);
+      } catch (err: any) {
+        throw new TRPCError({
+          code:
+            (err?.code || "INTERNAL_SERVER_ERROR") in TRPC_ERROR_CODES_BY_KEY
+              ? err.code
+              : "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        });
+      }
+    }),
   getAllByOrganizer: protectedProcedure.query(async ({ ctx }) => {
     try {
       const { id } = ctx;

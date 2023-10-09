@@ -47,27 +47,18 @@
         </p>
       </NuxtLink>
     </div>
-    <p class="relevan-event" style="font-size: 28px; font-weight: 600">
-      Relevan Event
-    </p>
+    <p class="relevan-event" style="font-size: 28px; font-weight: 600">Event</p>
     <p
       v-if="!state.isEventsLoading && state.events.length === 0"
       style="margin-top: 10px"
     >
       tidak ada event
     </p>
-    <div
-      style="
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        margin-top: 21px;
-        margin-bottom: 28px;
-      "
+    <ListPublicEvents
+      :events="state.events"
+      style="margin-top: 16px; margin-bottom: 28px"
       v-loading="state.isEventsLoading"
-    >
-      <ListPublicEvents :events="state.events" />
-    </div>
+    />
     <NuxtLink
       to="/events"
       style="margin: 0 auto; width: max-content; display: block"
@@ -113,7 +104,7 @@ const fetchCategories = async () => {
 const fetchEvents = async () => {
   try {
     state.isEventsLoading = true;
-    const events = await $client.event.getAllRelevanPublished.query();
+    const events = await $client.event.getAllPublished.query({ q: "" });
     state.events = events.slice(0, 6) as any;
   } catch (err: any) {
     ElNotification({

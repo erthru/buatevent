@@ -39,11 +39,13 @@
         />
       </NuxtLink>
       <ElInput
+        v-model="state.search"
         placeholder="Cari Event ..."
         class="search"
         style="flex: 1 1 0%"
         :prefix-icon="Search"
         size="large"
+        @keyup.enter="search"
       />
       <div
         class="actions"
@@ -102,13 +104,19 @@ import { Search } from "@element-plus/icons-vue";
 
 const route = useRoute();
 const breakpoint = useBreakpoint();
+const router = useRouter();
 
 const state = reactive({
   isTransparent: true,
+  search: (route.query.q || "") as string,
 });
 
 const checkTransparent = () => {
   state.isTransparent = route.path === "/" && window.scrollY < 1;
+};
+
+const search = () => {
+  router.push(`/events?q=${state.search}`);
 };
 
 onMounted(() => {
