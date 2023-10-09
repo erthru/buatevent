@@ -14,7 +14,15 @@ export const categoryRouter = router({
         },
       });
 
-      return categories;
+      const otherCategory = categories.find(
+        (category) => category.name === "Lainnya"
+      );
+
+      const categoriesWithoutOther = categories.filter(
+        (category) => category.name !== "Lainnya"
+      );
+
+      return [...categoriesWithoutOther, otherCategory];
     } catch (err: any) {
       throw new TRPCError({
         code:
