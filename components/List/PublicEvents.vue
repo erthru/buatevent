@@ -13,7 +13,16 @@
       />
       <div style="padding: 14px">
         <div style="display: flex; align-items: center">
-          <p style="font-size: 18px; font-weight: 600; color: #303133">
+          <p
+            style="
+              font-size: 18px;
+              font-weight: 600;
+              color: #303133;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            "
+          >
             {{ event.title }}
           </p>
           <ElTag size="small" type="success" style="margin-left: 8px">{{
@@ -65,7 +74,10 @@
             style="margin-left: 8px"
             >Expired</ElTag
           >
-          <a :href="`/${event.slug}`" style="margin-left: auto">
+          <a
+            :href="`${protocol}//${event.organizer.username}.${host}/${event.slug}`"
+            style="margin-left: auto"
+          >
             <ElButton text type="primary" size="large">Lihat</ElButton>
           </a>
         </div>
@@ -78,6 +90,8 @@
 import { Prisma } from "@prisma/client";
 import { PropType } from "nuxt/dist/app/compat/capi";
 import { Clock, DataBoard } from "@element-plus/icons-vue";
+
+const { public: prc } = useRuntimeConfig();
 
 const props = defineProps({
   events: {
@@ -93,6 +107,14 @@ const props = defineProps({
       return [];
     },
   },
+});
+
+const protocol = computed(() => {
+  return typeof window !== "undefined" ? location.protocol : "";
+});
+
+const host = computed(() => {
+  return prc.baseUrl.replaceAll("http://", "").replace("https://", "");
 });
 
 const getExpired = (endAt: Date): boolean => {

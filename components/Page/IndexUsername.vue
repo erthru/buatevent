@@ -45,7 +45,7 @@
       >
         Tidak ada event
       </p>
-      <ListPublicOrganizerEvent
+      <ListPublicEvents
         :events="(props.events as any)"
         style="margin-top: 18px"
       />

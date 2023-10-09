@@ -1,7 +1,7 @@
 <template>
   <div>
     <img
-      src="/uploads/default.png"
+      src="/images/banner.png"
       alt="banner"
       class="banner"
       style="width: 100%; object-fit: cover; border-radius: 4px"
@@ -12,15 +12,17 @@
         width: 100%;
         display: flex;
         overflow-x: auto;
-        margin-top: 21px;
+        margin-top: 28px;
         height: 160px;
       "
       v-loading="state.isCategoriesLoading"
     >
-      <div
+      <NuxtLink
         v-for="(category, i) in state.categories"
+        :to="`/categories/${category.slug}`"
         class="category"
         :key="`category-${i}`"
+        style="color: inherit"
       >
         <img
           :src="`/uploads/${category.thumbnail}`"
@@ -43,8 +45,35 @@
         >
           {{ category.name }}
         </p>
-      </div>
+      </NuxtLink>
     </div>
+    <p class="relevan-event" style="font-size: 28px; font-weight: 600">
+      Relevan Event
+    </p>
+    <p
+      v-if="!state.isEventsLoading && state.events.length === 0"
+      style="margin-top: 10px"
+    >
+      tidak ada event
+    </p>
+    <div
+      style="
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 21px;
+        margin-bottom: 28px;
+      "
+      v-loading="state.isEventsLoading"
+    >
+      <ListPublicEvents :events="state.events" />
+    </div>
+    <NuxtLink
+      to="/events"
+      style="margin: 0 auto; width: max-content; display: block"
+    >
+      <ElButton type="primary">Tampilkan Lebih Banyak</ElButton>
+    </NuxtLink>
   </div>
 </template>
 
@@ -56,6 +85,13 @@ const { $client } = useNuxtApp();
 const state = reactive({
   isCategoriesLoading: false,
   categories: [] as Prisma.CategoryGetPayload<{}>[],
+  isEventsLoading: false,
+  events: [] as Prisma.EventGetPayload<{
+    include: {
+      organizer: true;
+      category: true;
+    };
+  }>[],
 });
 
 const fetchCategories = async () => {
@@ -74,14 +110,32 @@ const fetchCategories = async () => {
   }
 };
 
+const fetchEvents = async () => {
+  try {
+    state.isEventsLoading = true;
+    const events = await $client.event.getAllRelevanPublished.query();
+    state.events = events.slice(0, 6) as any;
+  } catch (err: any) {
+    ElNotification({
+      title: "Error",
+      message: err.message,
+      type: "error",
+    });
+  } finally {
+    state.isEventsLoading = false;
+  }
+};
+
 onMounted(() => {
   fetchCategories();
+  fetchEvents();
 });
 </script>
 
 <style scoped>
 .banner {
   height: 240px;
+  margin-top: -10px;
 }
 
 .categories {
@@ -95,9 +149,14 @@ onMounted(() => {
   max-height: 95px;
 }
 
+.relevan-event {
+  margin-top: -10px;
+}
+
 @media (min-width: 768px) {
   .banner {
-    height: 300px;
+    height: 350px;
+    margin-top: -20px;
   }
 
   .categories {
@@ -109,6 +168,10 @@ onMounted(() => {
     max-width: 115px;
     min-height: 115px;
     max-height: 115px;
+  }
+
+  .relevan-event {
+    margin-top: 18px;
   }
 }
 </style>
